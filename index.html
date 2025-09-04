@@ -188,6 +188,18 @@ function syncMascotWithScroll(){
       contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DMでもOK◎このChatに連絡先を教えてもらえれば担当者から折り返すこともできるよ。'
     };
 
+    // API呼び出し関数（新規）
+async function ask(question) {
+  const res = await fetch('/api/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: question }),
+  })
+  const data = await res.json()
+  if (data.error) throw new Error(data.error)
+  return data.reply
+}
+
     // 吹き出し
     function addMsg(side, text) {
       const wrap = document.createElement('div');
@@ -210,16 +222,24 @@ function syncMascotWithScroll(){
       botSay(KB[intent] || '資料にない質問だよ。別のボタンを押してみて！');
     }
 
-    function handleInput() {
-      const text = inputEl.value.trim();
-      if (!text) return;
-      userSay(text);
-      inputEl.value = '';
-      botSay('ボタンで選ぶとすぐ答えるよ！');
-    }
+    // 入力送信はAPIへ投げる（置換後）
+async function handleInput() {
+  const text = inputEl.value.trim()
+  if (!text) return
+  userSay(text)
+  inputEl.value = ''
+  try {
+    const a = await ask(text)
+    botSay(a)
+  } catch (e) {
+    botSay('サーバでエラーが出た')
+  }
+}
 
-    sendBtn.addEventListener('click', handleInput);
-    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(); });
+    sendBtn.addEventListener('click', () => { handleInput() })
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); handleInput() }
+})
     quickEl.addEventListener('click', e => {
       const btn = e.target.closest('button'); if (!btn) return;
       answer(btn.dataset.intent);
@@ -244,50 +264,5 @@ function syncMascotWithScroll(){
     bodyEl.addEventListener('scroll', syncMascotWithScroll);
   </script>
 
-  <!-- 画面本体 -->
-<div id='messages'></div>
-
-<form id='chat-form'>
-  <input id='q' placeholder='質問を入力' autocomplete='off' />
-  <button type='submit'>送信</button>
-</form>
-
-<script>
-  async function ask(question) {
-    const res = await fetch('/api/ask', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: question }),
-    })
-    const data = await res.json()
-    if (data.error) throw new Error(data.error)
-    return data.reply
-  }
-
-  const msgs = document.getElementById('messages')
-  const form = document.getElementById('chat-form')
-  const input = document.getElementById('q')
-
-  function add(role, text) {
-    const p = document.createElement('p')
-    p.textContent = (role === 'user' ? 'あなた: ' : 'bot: ') + text
-    msgs.appendChild(p)
-    p.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault()
-    const q = input.value.trim()
-    if (!q) return
-    add('user', q)
-    input.value = ''
-    try {
-      const a = await ask(q)
-      add('bot', a)
-    } catch (err) {
-      add('bot', 'エラーが出た')
-    }
-  })
-</script>
 </body>
 </html>
