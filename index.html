@@ -79,6 +79,24 @@
     </div>
   </div>
   <script>
+    const launcher = document.querySelector('.hoap-chat-launcher');
+    const dialog = document.querySelector('.hoap-chat');
+    const closeBtn = document.querySelector('.hoap-chat-close');
+
+    function openChat() {
+      dialog.classList.add('open');
+      if (!bodyEl.dataset.welcomed) {
+        botSay('やっほー、HOAP-chanだよ。気になるところをタップしてね！');
+        bodyEl.dataset.welcomed = '1';
+      }
+      inputEl.focus();
+    }
+    function closeChat() {
+      dialog.classList.remove('open');
+    }
+
+    launcher.addEventListener('click', openChat);
+    closeBtn.addEventListener('click', closeChat);
     const bodyEl = document.getElementById('chatBody');
     const inputEl = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
