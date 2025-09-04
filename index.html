@@ -157,10 +157,13 @@
 function placeMascot() {
   const quickH = document.querySelector('.quick')?.offsetHeight || 0;
   const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
-  const uiH = quickH + inputH;  // 下部UI合計
-  bodyEl.style.setProperty('--uiH', uiH + 'px');   // ← これだけでOK
-  // 追加：下げ量。
-  bodyEl.style.setProperty('--down', Math.max(0, quickH - 45) + 'px');
+  const uiH = quickH + inputH;
+
+  const mascot = document.querySelector('.mascot');
+  if (!mascot) return;
+
+  const OFFSET = 45;                // ← ここを大きくすると「さらに下」に行く
+  mascot.style.bottom = (8 + uiH - OFFSET) + 'px';  // ← インラインで強制上書き
 }
     // マスコット固定用
 function syncMascotWithScroll(){
