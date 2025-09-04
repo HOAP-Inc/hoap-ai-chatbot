@@ -227,7 +227,7 @@ let lastTopic = ''; let sameCount = 0;
 function afterBotReply(userText){
   const k = topicKey(userText)
   if (k === lastTopic) sameCount += 1; else { lastTopic = k; sameCount = 1; }
-  if (sameCount >= 2) { botSay('よかったらHOAPに相談してみない？'); sameCount = 0; }
+  if (sameCount >= 2) { botSay('よかったらHOAPに相談してみない？問い合わせフォームを押してね！'); sameCount = 0; }
 }
 
   // API呼び出し
