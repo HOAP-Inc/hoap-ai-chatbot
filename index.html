@@ -119,6 +119,17 @@
     function addMsg(side, text) {
       const wrap = document.createElement('div');
       wrap.className = 'msg ' + side;
+
+      if (side === 'bot') {
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    const img = document.createElement('img');
+    img.src = 'hoap-basic.png';   // 同階層にある画像ファイル名
+    img.alt = 'HOAP-chan';
+    avatar.appendChild(img);
+    wrap.appendChild(avatar);
+  }
+    
       const bub = document.createElement('div');
       bub.className = 'bubble';
       bub.textContent = text;
