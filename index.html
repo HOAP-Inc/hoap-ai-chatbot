@@ -6,16 +6,17 @@
   <title>HOAP サイト用チャット</title>
   <style>
     :root {
-  --z: 2147483000;
-  --radius: 16px;
-  --shadow: 0 8px 24px rgba(0,0,0,.18);
-  --bg: #ffffff;
-  /* ピンク→紫 */
-  --grad1: #fbcfe8; /* pink-50 */
-  --grad2: #e9d5ff; /* purple-50 */
-  --grad3: #ddd6fe; /* violet-50 */
-}
+      --z: 2147483000;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(0,0,0,.18);
+      --bg: #ffffff;
+      /* ピンク→紫（薄すぎ対策でワントーン濃く） */
+      --grad1: #f9a8d4; /* pink-300 */
+      --grad2: #d8b4fe; /* purple-300 */
+      --grad3: #c4b5fd; /* violet-300 */
+    }
     * { box-sizing: border-box; }
+
     .hoap-chat-launcher {
       position: fixed; right: 20px; bottom: 20px; z-index: var(--z);
       width: 64px; height: 64px; border-radius: 999px; border: none; cursor: pointer;
@@ -23,55 +24,71 @@
       color: #fff; font-size: 24px; display: grid; place-items: center;
       box-shadow: var(--shadow);
     }
+
     .hoap-chat {
       position: fixed; right: 20px; bottom: 100px; z-index: var(--z);
       width: 360px; max-width: calc(100vw - 40px);
-      background: var(--bg); border-radius: var(--radius); box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden;
+      background: var(--bg); border-radius: var(--radius); box-shadow: var(--shadow);
       border: 1px solid #e5e7eb; isolation: isolate;
+      display: none; flex-direction: column; overflow: hidden;
     }
     .hoap-chat.open { display: flex; }
-    .hoap-chat-header { padding: 12px 14px; background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; display: flex; align-items: center; gap: 10px; }
+
+    .hoap-chat-header {
+      padding: 12px 14px;
+      background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
+      color: #fff; display: flex; align-items: center; gap: 10px;
+    }
     .hoap-chat-header .title { font-weight: 700; font-size: 14px; }
     .hoap-chat-header .sub { font-size: 12px; opacity: .9; }
     .hoap-chat-close { margin-left: auto; background: transparent; color: #fff; border: none; font-size: 18px; cursor: pointer; }
+
+    /* 本文：ほーぷちゃんの絶対配置の基準にする */
     .hoap-chat-body {
-  padding: 12px;
-  height: 420px;
-  overflow-y: auto;
-  background: #fafafa;
-  position: relative;
-  z-index: 1; /* 吹き出しを前面 */
-}
-    .msg { display: flex; gap: 8px; margin-bottom: 10px; }
+      padding: 12px; height: 420px; overflow-y: auto; background: #fafafa;
+      position: relative; z-index: 0;
+    }
+
+    /* 吹き出しは前景 */
+    .msg { display: flex; gap: 8px; margin-bottom: 10px; position: relative; z-index: 2; }
     .msg.user { justify-content: flex-end; }
     .bubble { padding: 10px 12px; border-radius: 14px; max-width: 80%; line-height: 1.4; font-size: 14px; }
     .msg.bot .bubble { background: #fff; border: 1px solid #e5e7eb; }
     .msg.user .bubble { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; }
 
-    .quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-top: 1px solid #e5e7eb; background: #fff; }
-    .quick button { border: 1px solid #e5e7eb; background: #fff; border-radius: 999px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+    .quick {
+      display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px;
+      border-top: 1px solid #e5e7eb; background: #fff;
+    }
+    .quick button {
+      border: 1px solid #e5e7eb; background: #fff; border-radius: 999px;
+      padding: 6px 10px; font-size: 12px; cursor: pointer;
+    }
 
-    .hoap-chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e5e7eb; background: #fff; }
-    .hoap-chat-input input { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px; }
-    .hoap-chat-input button { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer; }
+    .hoap-chat-input {
+      display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e5e7eb; background: #fff;
+    }
+    .hoap-chat-input input {
+      flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px;
+    }
+    .hoap-chat-input button {
+      background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
+      color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer;
+    }
 
-    /* ほーぷちゃん：質問ボタンの上に大きく。会話は上に被ってOK */
-.mascot {
-  position: absolute;
-  right: 0;                 /* さらに右寄せ */
-  bottom: 140px;            /* さらに下げる。必要なら数値で微調整 */
-  width: min(88%, 320px);   /* 大きめキープ。はみ出し防止で88% */
-  pointer-events: none;
-  z-index: 0;               /* 吹き出しの後ろに配置 */
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
-  opacity: .98;
-  animation: floaty 4.8s ease-in-out infinite;
-}
-@keyframes floaty {
-  0%   { transform: translateY(0) rotate(0.4deg); }
-  50%  { transform: translateY(-8px) rotate(-0.4deg); }
-  100% { transform: translateY(0) rotate(0.4deg); }
-}
+    /* ほーぷちゃん：本文の右下に固定。吹き出しの“背面”だけど背景に沈まない */
+    .mascot {
+      position: absolute; right: 8px; bottom: 8px;
+      width: min(72%, 280px); /* 大きめ */
+      pointer-events: none; z-index: 1;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
+      opacity: .98; animation: floaty 4.8s ease-in-out infinite;
+    }
+    @keyframes floaty {
+      0% { transform: translateY(0) rotate(0.4deg); }
+      50% { transform: translateY(-8px) rotate(-0.4deg); }
+      100% { transform: translateY(0) rotate(0.4deg); }
+    }
     @media (prefers-reduced-motion: reduce) {
       .mascot { animation: none; }
     }
@@ -79,6 +96,7 @@
 </head>
 <body>
   <button class='hoap-chat-launcher' aria-label='チャットを開く'>💬</button>
+
   <div class='hoap-chat' role='dialog' aria-label='HOAP サイトチャット'>
     <div class='hoap-chat-header'>
       <div>
@@ -88,7 +106,10 @@
       <button class='hoap-chat-close' aria-label='閉じる'>×</button>
     </div>
 
-    <div class='hoap-chat-body' id='chatBody'></div>
+    <!-- ★ ほーぷちゃんは本文の“中”に置く（常に見える） -->
+    <div class='hoap-chat-body' id='chatBody'>
+      <img class='mascot' src='hoap-basic.png' alt='HOAP-chan'>
+    </div>
 
     <div class='quick' id='quickArea'>
       <button data-intent='about'>サービス概要</button>
@@ -107,17 +128,14 @@
       <input id='chatInput' type='text' placeholder='質問を入力して送信'>
       <button id='sendBtn'>送信</button>
     </div>
-
-    <!-- ほーぷちゃん常駐（右下） -->
-    <img class='mascot' src='hoap-basic.png' alt='HOAP-chan'>
   </div>
 
   <script>
     // 要素参照
-    const bodyEl = document.getElementById('chatBody');
-    const inputEl = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const quickArea = document.getElementById('quickArea');
+    const bodyEl   = document.getElementById('chatBody');
+    const inputEl  = document.getElementById('chatInput');
+    const sendBtn  = document.getElementById('sendBtn');
+    const quickEl  = document.getElementById('quickArea');
 
     const launcher = document.querySelector('.hoap-chat-launcher');
     const dialog   = document.querySelector('.hoap-chat');
@@ -135,7 +153,7 @@
       price: '採用支援は月額10万円〜（求人数・期間により変動）。Instagram運用支援は月額15万円。初期費用は各10万円で提供しているよ！',
       flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能だよ！',
       contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DMでもOK◎このChatに連絡先を教えてもらえれば担当者から折り返すこともできるよ。'
-};
+    };
 
     // 吹き出し
     function addMsg(side, text) {
@@ -148,17 +166,17 @@
       bodyEl.appendChild(wrap);
       bodyEl.scrollTop = bodyEl.scrollHeight;
     }
-    function botSay(text) { addMsg('bot', text); }
-    function userSay(text) { addMsg('user', text); }
+    const botSay  = (t)=>addMsg('bot', t);
+    const userSay = (t)=>addMsg('user', t);
 
-    // まずユーザー吹き出し→次に回答
+    // ボタン押下：まずユーザー吹き出し→次に回答
     function answer(intent) {
-      const btn = quickArea.querySelector(`[data-intent='${intent}']`);
+      const btn = quickEl.querySelector(`[data-intent='${intent}']`);
       if (btn) userSay(btn.textContent);
       botSay(KB[intent] || '資料にない質問だよ。別のボタンを押してみて！');
     }
 
-    // 入力は今は案内のみ
+    // 自由入力（今は案内のみ）
     function handleInput() {
       const text = inputEl.value.trim();
       if (!text) return;
@@ -169,48 +187,24 @@
 
     sendBtn.addEventListener('click', handleInput);
     inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(); });
-    quickArea.addEventListener('click', e => { const btn = e.target.closest('button'); if (!btn) return; answer(btn.dataset.intent); });
+    quickEl.addEventListener('click', e => {
+      const btn = e.target.closest('button'); if (!btn) return;
+      answer(btn.dataset.intent);
+    });
 
-    function placeMascot() {
-  const mascot = document.querySelector('.mascot');
-  const quick = document.querySelector('.quick');
-  const input = document.querySelector('.hoap-chat-input');
-  if (!mascot || !quick || !input) return;
-  const gap = 8; // ちょい余白
-  const bottom = quick.offsetHeight + input.offsetHeight + gap;
-  mascot.style.bottom = bottom + 'px';
-}
+    // 開閉
+    function openChat() {
+      dialog.classList.add('open');
+      if (!bodyEl.dataset.welcomed) {
+        botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
+        bodyEl.dataset.welcomed = '1';
+      }
+      inputEl.focus();
+    }
+    function closeChat() { dialog.classList.remove('open'); }
 
-// 初回表示時とリサイズ時に再計算
-window.addEventListener('resize', placeMascot);
-
-if (window.ResizeObserver) {
-  const ro = new ResizeObserver(() => placeMascot());
-  const q  = document.querySelector('.quick');
-  const i  = document.querySelector('.hoap-chat-input');
-  if (q) ro.observe(q);
-  if (i) ro.observe(i);
-} else {
-  // 古い環境向けフォールバック
-  setInterval(placeMascot, 500);
-}
-
-// チャットを開いた直後にも呼ぶ
-function openChat() {
-  dialog.classList.add('open');
-  if (!bodyEl.dataset.welcomed) {
-    botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
-    bodyEl.dataset.welcomed = '1';
-  }
-  placeMascot();
-  inputEl.focus();
-}
-
-/* イベント紐づけ（ここまで到達すれば開く） */
-launcher.addEventListener('click', openChat);
-closeBtn.addEventListener('click', () => dialog.classList.remove('open'));
-
-placeMascot(); // 初回も位置合わせ
-</script>
+    launcher.addEventListener('click', openChat);
+    closeBtn.addEventListener('click', closeChat);
+  </script>
 </body>
 </html>
