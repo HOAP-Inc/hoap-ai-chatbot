@@ -3,7 +3,10 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://hoap-inc.jp/" }
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://hoap-inc.jp https://www.hoap-inc.jp"
+        }
       ]
     }
   ]
