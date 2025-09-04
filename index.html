@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang='ja'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>HOAP サイト用チャット</title>
+  <style>
+    :root {
+      --z: 2147483000;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(0,0,0,.18);
+      --bg: #ffffff;
+      --grad1: #f77737; 
+      --grad2: #fd1d1d; 
+      --grad3: #833ab4; 
+    }
+    * { box-sizing: border-box; }
+    .hoap-chat-launcher {
+      position: fixed; right: 20px; bottom: 20px; z-index: var(--z);
+      width: 64px; height: 64px; border-radius: 999px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
+      color: #fff; font-size: 24px; display: grid; place-items: center;
+      box-shadow: var(--shadow);
+    }
+    .hoap-chat {
+      position: fixed; right: 20px; bottom: 100px; z-index: var(--z);
+      width: 360px; max-width: calc(100vw - 40px);
+      background: var(--bg); border-radius: var(--radius); box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+    .hoap-chat.open { display: flex; }
+    .hoap-chat-header { padding: 12px 14px; background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; display: flex; align-items: center; gap: 10px; }
+    .hoap-chat-header .title { font-weight: 700; font-size: 14px; }
+    .hoap-chat-header .sub { font-size: 12px; opacity: .9; }
+    .hoap-chat-close { margin-left: auto; background: transparent; color: #fff; border: none; font-size: 18px; cursor: pointer; }
+    .hoap-chat-body { padding: 12px; height: 420px; overflow-y: auto; background: #fafafa; }
+    .msg { display: flex; gap: 8px; margin-bottom: 10px; }
+    .msg.bot { align-items: flex-start; }
+    .msg.user { justify-content: flex-end; }
+    .bubble { padding: 10px 12px; border-radius: 14px; max-width: 80%; line-height: 1.4; font-size: 14px; }
+    .bot .bubble { background: #fff; border: 1px solid #e5e7eb; }
+    .user .bubble { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; }
+    .quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-top: 1px solid #e5e7eb; background: #fff; }
+    .quick button { border: 1px solid #e5e7eb; background: #fff; border-radius: 999px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+    .hoap-chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e5e7eb; background: #fff; }
+    .hoap-chat-input input { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px; }
+    .hoap-chat-input button { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer; }
+    .avatar { width: 40px; height: 40px; border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  </style>
+</head>
+<body>
+  <button class='hoap-chat-launcher' aria-label='チャットを開く'>💬</button>
+  <div class='hoap-chat' role='dialog' aria-label='HOAP サイトチャット'>
+    <div class='hoap-chat-header'>
+      <div>
+        <div class='title'>HOAP-chan</div>
+        <div class='sub'>医療・歯科・介護業界特化 採用支援</div>
+      </div>
+      <button class='hoap-chat-close' aria-label='閉じる'>×</button>
+    </div>
+    <div class='hoap-chat-body' id='chatBody'></div>
+    <div class='quick' id='quickArea'>
+      <button data-intent='about'>サービス概要</button>
+      <button data-intent='trend'>採用トレンド</button>
+      <button data-intent='challenge'>採用課題</button>
+      <button data-intent='solution'>HOAPの解決法</button>
+      <button data-intent='feature'>支援の特徴</button>
+      <button data-intent='insta'>Instagram運用</button>
+      <button data-intent='cases'>事例紹介</button>
+      <button data-intent='price'>料金</button>
+      <button data-intent='flow'>導入フロー</button>
+      <button data-intent='faq'>FAQ</button>
+      <button data-intent='contact'>問い合わせ</button>
+    </div>
+    <div class='hoap-chat-input'>
+      <input id='chatInput' type='text' placeholder='質問を入力して送信'>
+      <button id='sendBtn'>送信</button>
+    </div>
+  </div>
+  <script>
+    const bodyEl = document.getElementById('chatBody');
+    const inputEl = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const quickArea = document.getElementById('quickArea');
+
+    const KB = {
+      about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービス。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集める【資料P7】',
+      trend: '応募前にSNSで情報収集する時代。求職者の8割がSNSで検索し、職場の雰囲気や人間関係を確認してから応募する【資料P5-6】',
+      challenge: '課題は「応募が来ない」「時間がない」「離職が多い」。診療や訪問に追われ、採用に手が回らない経営者が多い【資料P8】',
+      solution: 'HOAPは業界特化のノウハウで応募を集め、媒体運用・スカウトなど実務まで代行。経営者はコア業務に専念できる【資料P9】',
+      feature: '特徴は3つ。①欲しい人材像を明確化 ②媒体運用やスカウト送付を代行 ③毎月データ分析と改善提案【資料P11-13】',
+      insta: 'Instagram運用支援では、求職者に共感される投稿を設計し、ファン化を狙う。クライアントは写真提供・アンケ回答・投稿確認のみでOK【資料P16-18】',
+      cases: '事例: 株式会社first様は人事部門をアウトソースし応募増加。株式会社愛花様は応募数2.5倍に。株式会社ささえ様はスタッフ協力でインスタ発信成功【資料P21-23】',
+      price: '採用支援は月額10万円〜（求人数・期間により変動）。Instagram運用支援は月額15万円。初期費用は各10万円【資料P25-26】',
+      flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能【資料P27】',
+      faq: 'FAQ: 医療・歯科・介護の多職種に対応可能。DM対応も実施。スタッフが誰も協力できない場合は不可など詳細あり【資料P28】',
+      contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DM、または無料相談フォームから【資料P29】'
+    };
+
+    function addMsg(side, text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + side;
+      const bub = document.createElement('div');
+      bub.className = 'bubble';
+      bub.textContent = text;
+      wrap.appendChild(bub);
+      bodyEl.appendChild(wrap);
+      bodyEl.scrollTop = bodyEl.scrollHeight;
+    }
+
+    function botSay(text) { addMsg('bot', text); }
+    function userSay(text) { addMsg('user', text); }
+
+    function answer(intent) {
+      botSay(KB[intent] || '資料にない質問だよ。別のボタンを押してみて！');
+    }
+
+    function handleInput() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      userSay(text);
+      inputEl.value = '';
+      botSay('入力は今はボタン対応のみだよ。下のボタンを使ってね！');
+    }
+
+    sendBtn.addEventListener('click', handleInput);
+    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(); });
+    quickArea.addEventListener('click', e => { const btn = e.target.closest('button'); if (!btn) return; answer(btn.dataset.intent); });
+  </script>
+</body>
+</html>
