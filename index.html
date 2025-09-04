@@ -159,8 +159,8 @@ function placeMascot() {
   const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
   const uiH = quickH + inputH;  // 下部UI合計
   bodyEl.style.setProperty('--uiH', uiH + 'px');   // ← これだけでOK
-  // 追加：下げ量。まずは quickH - 24 くらいがちょうどいい
-  bodyEl.style.setProperty('--down', Math.max(0, quickH - 24) + 'px');
+  // 追加：下げ量。
+  bodyEl.style.setProperty('--down', Math.max(0, quickH - 45) + 'px');
 }
     // マスコット固定用
 function syncMascotWithScroll(){
