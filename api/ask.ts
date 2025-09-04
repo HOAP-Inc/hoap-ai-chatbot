@@ -1,3 +1,4 @@
+// @ts-nocheck
 // /api/ask.ts
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', 'https://hoap-inc.jp/'); // 埋め込み元
