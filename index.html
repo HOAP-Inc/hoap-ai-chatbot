@@ -77,7 +77,7 @@
 
     /* ★ ほーぷちゃん：本文内で右下固定（スクロールに連動しない）、吹き出しの後ろ */
 .mascot{
-  position: absolute;    /* 基準は .hoap-chat-body（既に position:relative） */
+  position: absolute;    /* 基準は .hoap-chat-body */
   right: 8px;
   bottom: 140px;         /* 初期値。JSで下部UIの高さに合わせて上書き */
   width: min(78%, 300px);
@@ -85,16 +85,25 @@
   z-index: 1;            /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
   filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
   opacity: .98;
+
+  /* スクロール打消し。JSで --scrollY を更新 */
+  transform: translateY(var(--scrollY, 0px));
+}
+
+.mascot-sprite{
+  display: block; width: 100%; height: auto;
   animation: floaty 4.8s ease-in-out infinite;
 }
-    @keyframes floaty {
-      0% { transform: translateY(0) rotate(0.4deg); }
-      50% { transform: translateY(-8px) rotate(-0.4deg); }
-      100% { transform: translateY(0) rotate(0.4deg); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .mascot { animation: none; }
-    }
+
+@keyframes floaty {
+  0%   { transform: translateY(0) rotate(0.4deg); }
+  50%  { transform: translateY(-8px) rotate(-0.4deg); }
+  100% { transform: translateY(0) rotate(0.4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-sprite { animation: none; }
+}
   </style>
 </head>
 <body>
@@ -110,9 +119,12 @@
     </div>
 
     <!-- ★ ほーぷちゃんは本文(.hoap-chat-body)の“中”に置く -->
-    <div class='hoap-chat-body' id='chatBody'>
-      <img class='mascot' src='hoap-basic.png' alt='HOAP-chan'>
-    </div>
+    <!-- ここを置き換え -->
+<div class='hoap-chat-body' id='chatBody'>
+  <div class='mascot' aria-hidden='true'>
+    <img class='mascot-sprite' src='hoap-basic.png' alt='HOAP-chan'>
+  </div>
+</div>
 
     <div class='quick' id='quickArea'>
       <button data-intent='about'>サービス概要</button>
@@ -149,6 +161,13 @@ function placeMascot() {
   const gap = 8;
   mascot.style.bottom = (quickH + inputH + gap) + 'px';
 }
+    // マスコット固定用
+function syncMascotWithScroll(){
+  const mascot = document.querySelector('.mascot');
+  if(!mascot) return;
+  // スクロール量ぶんだけ下向きに動かして、見た目を固定
+  mascot.style.setProperty('--scrollY', bodyEl.scrollTop + 'px');
+}
 
     const launcher = document.querySelector('.hoap-chat-launcher');
     const dialog   = document.querySelector('.hoap-chat');
@@ -179,6 +198,7 @@ function placeMascot() {
       bodyEl.appendChild(wrap);
       bodyEl.scrollTop = bodyEl.scrollHeight;
       placeMascot();
+      syncMascotWithScroll();
     }
     const botSay  = (t)=>addMsg('bot', t);
     const userSay = (t)=>addMsg('user', t);
@@ -212,6 +232,7 @@ function placeMascot() {
         bodyEl.dataset.welcomed = '1';
       }
       placeMascot();
+      syncMascotWithScroll();
       inputEl.focus();
     }
     function closeChat() { dialog.classList.remove('open'); }
@@ -219,6 +240,7 @@ function placeMascot() {
     launcher.addEventListener('click', openChat);
     closeBtn.addEventListener('click', closeChat);
     window.addEventListener('resize', placeMascot);
+    bodyEl.addEventListener('scroll', syncMascotWithScroll);
   </script>
 </body>
 </html>
