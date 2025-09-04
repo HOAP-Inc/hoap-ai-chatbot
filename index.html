@@ -80,7 +80,7 @@
 .mascot{
   position: absolute;    /* 基準は .hoap-chat-body */
   right: 8px;
-  bottom: calc(8px + var(--uiH, 0px) - var(--down, 0px));
+  .mascot{ bottom: 20px; } /* 好みで 8〜24px くらいに調整 */
   width: min(78%, 300px);
   pointer-events: none;
   z-index: 1;            /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
@@ -155,15 +155,12 @@
 
     // 下のボタン群と入力欄の高さに合わせて、ほーぷちゃんの下端を持ち上げる
 function placeMascot() {
-  const quickH = document.querySelector('.quick')?.offsetHeight || 0;
-  const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
-  const uiH = quickH + inputH;
-
   const mascot = document.querySelector('.mascot');
   if (!mascot) return;
 
-  const OFFSET = 45;                // ← ここを大きくすると「さらに下」に行く
-  mascot.style.bottom = (8 + uiH - OFFSET) + 'px';  // ← インラインで強制上書き
+  const BOTTOM = 12; // 8〜24あたりで微調整。数値大きくすると“ちょい上”になる
+  // 重要: どんなCSSより強く下げたいので !important で固定
+  mascot.style.setProperty('bottom', BOTTOM + 'px', 'important');
 }
     // マスコット固定用
 function syncMascotWithScroll(){
@@ -246,5 +243,51 @@ function syncMascotWithScroll(){
     window.addEventListener('resize', placeMascot);
     bodyEl.addEventListener('scroll', syncMascotWithScroll);
   </script>
+
+  <!-- 画面本体 -->
+<div id='messages'></div>
+
+<form id='chat-form'>
+  <input id='q' placeholder='質問を入力' autocomplete='off' />
+  <button type='submit'>送信</button>
+</form>
+
+<script>
+  async function ask(question) {
+    const res = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: question }),
+    })
+    const data = await res.json()
+    if (data.error) throw new Error(data.error)
+    return data.reply
+  }
+
+  const msgs = document.getElementById('messages')
+  const form = document.getElementById('chat-form')
+  const input = document.getElementById('q')
+
+  function add(role, text) {
+    const p = document.createElement('p')
+    p.textContent = (role === 'user' ? 'あなた: ' : 'bot: ') + text
+    msgs.appendChild(p)
+    p.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const q = input.value.trim()
+    if (!q) return
+    add('user', q)
+    input.value = ''
+    try {
+      const a = await ask(q)
+      add('bot', a)
+    } catch (err) {
+      add('bot', 'エラーが出た')
+    }
+  })
+</script>
 </body>
 </html>
