@@ -80,7 +80,7 @@
 .mascot{
   position: absolute;    /* 基準は .hoap-chat-body */
   right: 8px;
-  bottom: calc(8px + var(--uiH, 0px));
+  bottom: calc(8px + var(--uiH, 0px) - var(--down, 0px));
   width: min(78%, 300px);
   pointer-events: none;
   z-index: 1;            /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
@@ -159,6 +159,8 @@ function placeMascot() {
   const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
   const uiH = quickH + inputH;  // 下部UI合計
   bodyEl.style.setProperty('--uiH', uiH + 'px');   // ← これだけでOK
+  // 追加：下げ量。まずは quickH - 24 くらいがちょうどいい
+  bodyEl.style.setProperty('--down', Math.max(0, quickH - 24) + 'px');
 }
     // マスコット固定用
 function syncMascotWithScroll(){
