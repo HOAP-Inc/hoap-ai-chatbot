@@ -75,19 +75,18 @@
       color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer;
     }
 
-    /* ★ ほーぷちゃん：本文の中で“右下に張り付き”、吹き出しより後ろ */
-    .mascot{
-      position: sticky;        /* 本文スクロールの下端に追従 */
-      bottom: 8px;             /* 本文のビューポート下から 8px */
-      display: block;
-      margin-left: auto;       /* 右寄せ */
-      width: min(78%, 300px);
-      pointer-events: none;
-      z-index: 1;              /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
-      filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
-      opacity: .98;
-      animation: floaty 4.8s ease-in-out infinite;
-    }
+    /* ★ ほーぷちゃん：本文内で右下固定（スクロールに連動しない）、吹き出しの後ろ */
+.mascot{
+  position: absolute;    /* 基準は .hoap-chat-body（既に position:relative） */
+  right: 8px;
+  bottom: 140px;         /* 初期値。JSで下部UIの高さに合わせて上書き */
+  width: min(78%, 300px);
+  pointer-events: none;
+  z-index: 1;            /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
+  opacity: .98;
+  animation: floaty 4.8s ease-in-out infinite;
+}
     @keyframes floaty {
       0% { transform: translateY(0) rotate(0.4deg); }
       50% { transform: translateY(-8px) rotate(-0.4deg); }
@@ -141,6 +140,16 @@
     const sendBtn  = document.getElementById('sendBtn');
     const quickEl  = document.getElementById('quickArea');
 
+    // 下のボタン群と入力欄の高さに合わせて、ほーぷちゃんの下端を持ち上げる
+function placeMascot() {
+  const mascot = document.querySelector('.mascot');
+  if (!mascot) return;
+  const quickH = document.querySelector('.quick')?.offsetHeight || 0;
+  const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
+  const gap = 8;
+  mascot.style.bottom = (quickH + inputH + gap) + 'px';
+}
+
     const launcher = document.querySelector('.hoap-chat-launcher');
     const dialog   = document.querySelector('.hoap-chat');
     const closeBtn = document.querySelector('.hoap-chat-close');
@@ -169,6 +178,7 @@
       wrap.appendChild(bub);
       bodyEl.appendChild(wrap);
       bodyEl.scrollTop = bodyEl.scrollHeight;
+      placeMascot();
     }
     const botSay  = (t)=>addMsg('bot', t);
     const userSay = (t)=>addMsg('user', t);
@@ -201,12 +211,14 @@
         botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
         bodyEl.dataset.welcomed = '1';
       }
+      placeMascot();
       inputEl.focus();
     }
     function closeChat() { dialog.classList.remove('open'); }
 
     launcher.addEventListener('click', openChat);
     closeBtn.addEventListener('click', closeChat);
+    window.addEventListener('resize', placeMascot);
   </script>
 </body>
 </html>
