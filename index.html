@@ -11,9 +11,9 @@
   --shadow: 0 8px 24px rgba(0,0,0,.18);
   --bg: #ffffff;
   /* ピンク→紫 */
-  --grad1: #fbcfe8; /* pink-200 */
-  --grad2: #e9d5ff; /* purple-200 */
-  --grad3: #ddd6fe; /* violet-200 */
+  --grad1: #fbcfe8; /* pink-50 */
+  --grad2: #e9d5ff; /* purple-50 */
+  --grad3: #ddd6fe; /* violet-50 */
 }
     * { box-sizing: border-box; }
     .hoap-chat-launcher {
@@ -183,9 +183,17 @@
 
 // 初回表示時とリサイズ時に再計算
 window.addEventListener('resize', placeMascot);
-const ro = new ResizeObserver(placeMascot);
-ro.observe(document.querySelector('.quick'));
-ro.observe(document.querySelector('.hoap-chat-input'));
+
+if (window.ResizeObserver) {
+  const ro = new ResizeObserver(() => placeMascot());
+  const q  = document.querySelector('.quick');
+  const i  = document.querySelector('.hoap-chat-input');
+  if (q) ro.observe(q);
+  if (i) ro.observe(i);
+} else {
+  // 古い環境向けフォールバック
+  setInterval(placeMascot, 500);
+}
 
 // チャットを開いた直後にも呼ぶ
 function openChat() {
@@ -194,13 +202,15 @@ function openChat() {
     botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
     bodyEl.dataset.welcomed = '1';
   }
-  placeMascot(); // ← ここ！
+  placeMascot();
   inputEl.focus();
 }
 
-// ★ イベント紐づけが無いので追加
+/* イベント紐づけ（ここまで到達すれば開く） */
 launcher.addEventListener('click', openChat);
 closeBtn.addEventListener('click', () => dialog.classList.remove('open'));
-  </script>
+
+placeMascot(); // 初回も位置合わせ
+</script>
 </body>
 </html>
