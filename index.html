@@ -147,143 +147,133 @@
   </div>
 
   <script>
-    // 要素
-    const bodyEl   = document.getElementById('chatBody');
-    const inputEl  = document.getElementById('chatInput');
-    const sendBtn  = document.getElementById('sendBtn');
-    const quickEl  = document.getElementById('quickArea');
+  // 要素
+  const bodyEl   = document.getElementById('chatBody');
+  const inputEl  = document.getElementById('chatInput');
+  const sendBtn  = document.getElementById('sendBtn');
+  const quickEl  = document.getElementById('quickArea');
+  const launcher = document.querySelector('.hoap-chat-launcher');
+  const dialog   = document.querySelector('.hoap-chat');
+  const closeBtn = document.querySelector('.hoap-chat-close');
 
-    // 下のボタン群と入力欄の高さに合わせて、ほーぷちゃんの下端を持ち上げる
-function placeMascot() {
-  const mascot = document.querySelector('.mascot');
-  if (!mascot) return;
-
-  const BOTTOM = 12; // 8〜24あたりで微調整。数値大きくすると“ちょい上”になる
-  // 重要: どんなCSSより強く下げたいので !important で固定
-  mascot.style.setProperty('bottom', BOTTOM + 'px', 'important');
-}
-    // マスコット固定用
-function syncMascotWithScroll(){
-  const mascot = document.querySelector('.mascot');
-  if(!mascot) return;
-  // スクロール量ぶんだけ下向きに動かして、見た目を固定
-  mascot.style.setProperty('--scrollY', bodyEl.scrollTop + 'px');
-}
-
-    const launcher = document.querySelector('.hoap-chat-launcher');
-    const dialog   = document.querySelector('.hoap-chat');
-    const closeBtn = document.querySelector('.hoap-chat-close');
-
-    // KB
-    const KB = {
-      about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
-      trend: '求職者は応募前にSNSで情報収集する時代。求職者の8割がSNSで気になる会社を検索し、職場の雰囲気や人間関係を確認してから応募するんだ。',
-      challenge: 'よく相談される課題は「応募が来ない」「時間がない」「離職が多い」。診療や訪問に追われ、採用に手が回らない経営者も多いんだ。',
-      solution: 'HOAPは業界特化のノウハウで応募を集め、媒体の運用・スカウト・面接日調整、採用広報のSNS運用など実務まで代行しているよ。経営者や事務スタッフはコア業務に専念できるんだ！',
-      feature: '特徴は3つ。①欲しい人材像を明確化 ②媒体運用やスカウト送付を代行 ③毎月データ分析と改善提案',
-      insta: 'Instagram運用支援では、他社との差別化×求職者に共感される投稿を設計し、ファン化を狙うよ。お客様は写真の提供とアンケートの回答、投稿前のチェックだけでいいんだ！',
-      cases: '事例① 兵庫県の訪問看護ステーション様では人事部門をアウトソーシングして応募が増加。事例②千葉県の介護事業所様ではなんと応募数が2.5倍に。　事例③東京都の訪問看護ステーション様では求職者からDMで応募が来たり面接で「インスタを見て応募を決めました」という声もあるんだ。',
-      price: '採用支援は月額10万円〜（求人数・期間により変動）。Instagram運用支援は月額15万円。初期費用は各10万円で提供しているよ！',
-      flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能だよ！',
-      contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DMでもOK◎このChatに連絡先を教えてもらえれば担当者から折り返すこともできるよ。'
-    };
-
-    // API呼び出し関数（新規）
-async function handleInput() {
-  const raw = inputEl.value
-  const text = raw.trim()
-  if (!text) return
-
-  userSay(text)
-
-  // 強制クリアとフォーカス維持（IME残留対策で少し遅延）
-  inputEl.value = ''
-  setTimeout(() => { inputEl.value = ''; inputEl.focus() }, 0)
-
-  try {
-    const a = await ask(text)
-    botSay(a || '（空の返答）')
-  } catch (e) {
-    botSay('サーバでエラーが出た')
+  // マスコット位置調整
+  function placeMascot() {
+    const mascot = document.querySelector('.mascot');
+    if (!mascot) return;
+    mascot.style.setProperty('bottom', '12px', 'important');
   }
-}
-  const data = await res.json()
-  if (data.error) throw new Error(data.error)
-  return data.reply
-}
-
-    // 吹き出し
-    function addMsg(side, text) {
-      const wrap = document.createElement('div');
-      wrap.className = 'msg ' + side;
-      const bub = document.createElement('div');
-      bub.className = 'bubble';
-      bub.textContent = text;
-      wrap.appendChild(bub);
-      bodyEl.appendChild(wrap);
-      bodyEl.scrollTop = bodyEl.scrollHeight;
-      placeMascot();
-      syncMascotWithScroll();
-    }
-    const botSay  = (t)=>addMsg('bot', t);
-    const userSay = (t)=>addMsg('user', t);
-
-    function answer(intent) {
-      const btn = quickEl.querySelector(`[data-intent='${intent}']`);
-      if (btn) userSay(btn.textContent);
-      botSay(KB[intent] || '資料にない質問だよ。別のボタンを押してみて！');
-    }
-
-    // 入力送信はAPIへ投げる（置換後）
-async function handleInput() {
-  const text = inputEl.value.trim()
-  if (!text) return
-  userSay(text)
-  inputEl.value = ''
-  try {
-    const a = await ask(text)
-    botSay(a)
-  } catch (e) {
-    botSay('サーバでエラーが出た')
+  function syncMascotWithScroll(){
+    const mascot = document.querySelector('.mascot');
+    if(!mascot) return;
+    mascot.style.setProperty('--scrollY', bodyEl.scrollTop + 'px');
   }
-}
 
-    sendBtn.addEventListener('click', () => { handleInput() })
+  // 固定レス（ボタン）
+  const KB = {
+    about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
+    trend: '求職者は応募前にSNSで情報収集する時代。求職者の8割がSNSで気になる会社を検索し、職場の雰囲気や人間関係を確認してから応募するんだ。',
+    challenge: 'よく相談される課題は「応募が来ない」「時間がない」「離職が多い」。診療や訪問に追われ、採用に手が回らない経営者も多いんだ。',
+    solution: 'HOAPは業界特化のノウハウで応募を集め、媒体の運用・スカウト・面接日調整、採用広報のSNS運用など実務まで代行しているよ。経営者や事務スタッフはコア業務に専念できるんだ！',
+    feature: '特徴は3つ。①欲しい人材像を明確化 ②媒体運用やスカウト送付を代行 ③毎月データ分析と改善提案',
+    insta: 'Instagram運用支援では、他社との差別化×求職者に共感される投稿を設計し、ファン化を狙うよ。お客様は写真の提供とアンケートの回答、投稿前のチェックだけでいいんだ！',
+    cases: '事例① 兵庫県の訪問看護ステーション様では人事部門をアウトソーシングして応募が増加。事例②千葉県の介護事業所様ではなんと応募数が2.5倍に。　事例③東京都の訪問看護ステーション様では求職者からDMで応募が来たり面接で「インスタを見て応募を決めました」という声もあるんだ。',
+    price: '採用支援は月額10万円〜（求人数・期間により変動）。Instagram運用支援は月額15万円。初期費用は各10万円で提供しているよ！',
+    flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能だよ！',
+    contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DMでもOK◎このChatに連絡先を教えてもらえれば担当者から折り返すこともできるよ。'
+  };
 
-// 日本語IME中のEnterは無視。Ctrl+Enterだけ送信。Enter単体は改行。
-let composing = false
-inputEl.addEventListener('compositionstart', () => { composing = true })
-inputEl.addEventListener('compositionend',   () => { composing = false })
-inputEl.addEventListener('keydown', e => {
-  if (composing) return
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault()
-    handleInput()
+  // 吹き出し
+  function addMsg(side, text) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ' + side;
+    const bub = document.createElement('div');
+    bub.className = 'bubble';
+    bub.textContent = text;
+    wrap.appendChild(bub);
+    bodyEl.appendChild(wrap);
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+    placeMascot();
+    syncMascotWithScroll();
   }
-})
-    quickEl.addEventListener('click', e => {
-      const btn = e.target.closest('button'); if (!btn) return;
-      answer(btn.dataset.intent);
+  const botSay  = (t)=>addMsg('bot', t);
+  const userSay = (t)=>addMsg('user', t);
+
+  // クイックボタン → 固定文
+  function answer(intent) {
+    const btn = quickEl.querySelector(`[data-intent='${intent}']`);
+    if (btn) userSay(btn.textContent);
+    botSay(KB[intent] || '別のボタンを押してみて！');
+  }
+
+  // API呼び出し
+  async function ask(question) {
+    const res = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: question }),
     });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data.reply || '';
+  }
 
-    // 開閉
-    function openChat() {
-      dialog.classList.add('open');
-      if (!bodyEl.dataset.welcomed) {
-        botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
-        bodyEl.dataset.welcomed = '1';
-      }
-      placeMascot();
-      syncMascotWithScroll();
-      inputEl.focus();
+  // 入力送信 → API
+  async function handleInput() {
+    const raw = inputEl.value;
+    const text = raw.trim();
+    if (!text) return;
+
+    userSay(text);
+    inputEl.value = '';
+    setTimeout(() => { inputEl.value = ''; inputEl.focus(); }, 0);
+
+    try {
+      const a = await ask(text);
+      botSay(a || '（空の返答）');
+    } catch (e) {
+      botSay('サーバでエラーが出た');
     }
-    function closeChat() { dialog.classList.remove('open'); }
+  }
 
-    launcher.addEventListener('click', openChat);
-    closeBtn.addEventListener('click', closeChat);
-    window.addEventListener('resize', placeMascot);
-    bodyEl.addEventListener('scroll', syncMascotWithScroll);
-  </script>
+  // イベント登録（重複禁止・awaitを外に出さない）
+  sendBtn.addEventListener('click', () => { handleInput(); });
+
+  // 日本語IME配慮。Ctrl+Enter 送信。Enter単体は改行。
+  let composing = false;
+  inputEl.addEventListener('compositionstart', () => { composing = true; });
+  inputEl.addEventListener('compositionend',   () => { composing = false; });
+  inputEl.addEventListener('keydown', e => {
+    if (composing) return;
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleInput();
+    }
+  });
+
+  quickEl.addEventListener('click', e => {
+    const btn = e.target.closest('button'); if (!btn) return;
+    const intent = btn.dataset.intent;
+    if (!intent) return;
+    answer(intent);
+  });
+
+  function openChat() {
+    dialog.classList.add('open');
+    if (!bodyEl.dataset.welcomed) {
+      botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
+      bodyEl.dataset.welcomed = '1';
+    }
+    placeMascot();
+    syncMascotWithScroll();
+    inputEl.focus();
+  }
+  function closeChat() { dialog.classList.remove('open'); }
+
+  launcher.addEventListener('click', openChat);
+  closeBtn.addEventListener('click', closeChat);
+  window.addEventListener('resize', placeMascot);
+  bodyEl.addEventListener('scroll', syncMascotWithScroll);
+</script>
 
 </body>
 </html>
