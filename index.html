@@ -211,8 +211,25 @@
   function answer(intent) {
     const btn = quickEl.querySelector(`[data-intent='${intent}']`);
     if (btn) userSay(btn.textContent);
-    botSay(KB[intent] || '別のボタンを押してみて！');
+    botSay(KB[intent] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
   }
+
+    // --- 話題カウント（同じ話題が2ターン続いたら案内） ---
+function topicKey(text){
+  const t = text.replace(/\s+/g,'').toLowerCase()
+  if (t.includes('料金')||t.includes('price')) return 'price'
+  if (t.includes('導入')||t.includes('flow')||t.includes('始め')) return 'flow'
+  if (t.includes('事例')||t.includes('case')) return 'cases'
+  if (t.includes('インスタ')||t.includes('instagram')) return 'insta'
+  if (t.includes('求人')||t.includes('採用')||t.includes('広報')) return 'recruit'
+  return 'service'
+}
+let lastTopic = ''; let sameCount = 0;
+function afterBotReply(userText){
+  const k = topicKey(userText)
+  if (k === lastTopic) sameCount += 1; else { lastTopic = k; sameCount = 1; }
+  if (sameCount >= 2) { botSay('よかったらHOAPに相談してみない？'); sameCount = 0; }
+}
 
   // API呼び出し
   async function ask(question) {
@@ -237,8 +254,9 @@
     setTimeout(() => { inputEl.value = ''; inputEl.focus(); }, 0);
 
     try {
-      const a = await ask(text);
-      botSay(a || '（空の返答）');
+      const a = await ask(text)
+botSay(a || '（空の返答）')
+afterBotReply(text)
     } catch (e) {
       botSay('サーバでエラーが出た');
     }
@@ -263,7 +281,8 @@
     const btn = e.target.closest('button'); if (!btn) return;
     const intent = btn.dataset.intent;
     if (!intent) return;
-    answer(intent);
+    answer(btn.dataset.intent);
+afterBotReply(btn.textContent);
   });
 
   function openChat() {
