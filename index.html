@@ -119,6 +119,10 @@
     const sendBtn = document.getElementById('sendBtn');
     const quickArea = document.getElementById('quickArea');
 
+    const launcher = document.querySelector('.hoap-chat-launcher');
+    const dialog   = document.querySelector('.hoap-chat');
+    const closeBtn = document.querySelector('.hoap-chat-close');
+
     // ナレッジ（資料準拠）
     const KB = {
       about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
@@ -192,6 +196,11 @@ function openChat() {
   }
   placeMascot(); // ← ここ！
   inputEl.focus();
+}
+
+// ★ イベント紐づけが無いので追加
+launcher.addEventListener('click', openChat);
+closeBtn.addEventListener('click', () => dialog.classList.remove('open'));
 }
   </script>
 </body>
