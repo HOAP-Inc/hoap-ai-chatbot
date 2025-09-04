@@ -47,6 +47,7 @@ export default async function handler(req: any, res: any) {
     '行動の強制はしない。提案は任意で、断れる余地を必ず残す',
     'センシティブやサービス外は「扱えない」と明確に伝えてから、許可された話題に誘導',
     '文面は短く端的',
+    '敬語厳禁。丁寧だけど相手に寄り添うエージェントとして親しみのある口調で回答',
   ].join('。')
 
   const r = await fetch('https://api.openai.com/v1/responses', {
