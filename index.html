@@ -43,14 +43,13 @@
     .hoap-chat-header .sub { font-size: 12px; opacity: .9; }
     .hoap-chat-close { margin-left: auto; background: transparent; color: #fff; border: none; font-size: 18px; cursor: pointer; }
 
-    /* 本文：ほーぷちゃんの絶対配置の基準にする */
+    /* 本文（吹き出しを前景にする） */
     .hoap-chat-body {
       padding: 12px; height: 420px; overflow-y: auto; background: #fafafa;
-      position: relative; z-index: 0;
+      position: relative; z-index: 2;
     }
 
-    /* 吹き出しは前景 */
-    .msg { display: flex; gap: 8px; margin-bottom: 10px; position: relative; z-index: 2; }
+    .msg { display: flex; gap: 8px; margin-bottom: 10px; }
     .msg.user { justify-content: flex-end; }
     .bubble { padding: 10px 12px; border-radius: 14px; max-width: 80%; line-height: 1.4; font-size: 14px; }
     .msg.bot .bubble { background: #fff; border: 1px solid #e5e7eb; }
@@ -76,19 +75,18 @@
       color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer;
     }
 
-    /* ほーぷちゃん：本文のスクロール下端へ“張り付く” */
-.mascot{
-  position: sticky;       /* ← absoluteやめる */
-  bottom: 8px;            /* 本文ビューポート下から8px */
-  display: block;
-  margin-left: auto;      /* 右寄せ */
-  width: min(72%, 280px);
-  pointer-events: none;
-  z-index: 1;             /* 背景(0) < ほーぷちゃん(1) < 吹き出し(2) */
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
-  opacity: .98;
-  animation: floaty 4.8s ease-in-out infinite;
-}
+    /* ほーぷちゃん：チャット全体に対して絶対配置（スクロールしても固定） */
+    .mascot{
+      position: absolute;        /* ← fixedじゃない。親(.hoap-chat)基準 */
+      right: 8px;
+      bottom: 140px;             /* 仮値。JSで上書きする */
+      width: min(78%, 300px);
+      pointer-events: none;
+      z-index: 1;                /* ほーぷちゃん(1) < 本文(2) で吹き出しが前 */
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
+      opacity: .98;
+      animation: floaty 4.8s ease-in-out infinite;
+    }
     @keyframes floaty {
       0% { transform: translateY(0) rotate(0.4deg); }
       50% { transform: translateY(-8px) rotate(-0.4deg); }
@@ -111,10 +109,10 @@
       <button class='hoap-chat-close' aria-label='閉じる'>×</button>
     </div>
 
-    <!-- ★ ほーぷちゃんは本文の“中”に置く（常に見える） -->
-    <div class='hoap-chat-body' id='chatBody'>
-      <img class='mascot' src='hoap-basic.png' alt='HOAP-chan'>
-    </div>
+    <!-- ほーぷちゃんは本文の外（チャット直下）に置く：固定表示用 -->
+    <img class='mascot' src='hoap-basic.png' alt='HOAP-chan'>
+
+    <div class='hoap-chat-body' id='chatBody'></div>
 
     <div class='quick' id='quickArea'>
       <button data-intent='about'>サービス概要</button>
@@ -145,6 +143,7 @@
     const launcher = document.querySelector('.hoap-chat-launcher');
     const dialog   = document.querySelector('.hoap-chat');
     const closeBtn = document.querySelector('.hoap-chat-close');
+    const mascot  = document.querySelector('.mascot');
 
     // ナレッジ（資料準拠）
     const KB = {
@@ -160,6 +159,15 @@
       contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DMでもOK◎このChatに連絡先を教えてもらえれば担当者から折り返すこともできるよ。'
     };
 
+    // ほーぷちゃんの下マージンを質問ボタン＋送信欄ぶん確保
+    function placeMascot() {
+      if (!mascot) return;
+      const quickH = document.querySelector('.quick')?.offsetHeight || 0;
+      const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
+      const gap = 10;
+      mascot.style.bottom = (quickH + inputH + gap) + 'px';
+    }
+
     // 吹き出し
     function addMsg(side, text) {
       const wrap = document.createElement('div');
@@ -170,6 +178,8 @@
       wrap.appendChild(bub);
       bodyEl.appendChild(wrap);
       bodyEl.scrollTop = bodyEl.scrollHeight;
+      // 追加のたびに位置再計算（高さが変わるため）
+      placeMascot();
     }
     const botSay  = (t)=>addMsg('bot', t);
     const userSay = (t)=>addMsg('user', t);
@@ -204,12 +214,26 @@
         botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
         bodyEl.dataset.welcomed = '1';
       }
+      placeMascot();
       inputEl.focus();
     }
     function closeChat() { dialog.classList.remove('open'); }
 
     launcher.addEventListener('click', openChat);
     closeBtn.addEventListener('click', closeChat);
+
+    // リサイズや各ブロック高さ変化で再計算
+    window.addEventListener('resize', placeMascot);
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(placeMascot);
+      const q  = document.querySelector('.quick');
+      const i  = document.querySelector('.hoap-chat-input');
+      if (q) ro.observe(q);
+      if (i) ro.observe(i);
+    }
+
+    // 初期計算
+    placeMascot();
   </script>
 </body>
 </html>
