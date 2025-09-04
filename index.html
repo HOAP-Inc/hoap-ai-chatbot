@@ -76,14 +76,19 @@
       color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer;
     }
 
-    /* ほーぷちゃん：本文の右下に固定。吹き出しの“背面”だけど背景に沈まない */
-    .mascot {
-      position: absolute; right: 8px; bottom: 8px;
-      width: min(72%, 280px); /* 大きめ */
-      pointer-events: none; z-index: 1;
-      filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
-      opacity: .98; animation: floaty 4.8s ease-in-out infinite;
-    }
+    /* ほーぷちゃん：本文のスクロール下端へ“張り付く” */
+.mascot{
+  position: sticky;       /* ← absoluteやめる */
+  bottom: 8px;            /* 本文ビューポート下から8px */
+  display: block;
+  margin-left: auto;      /* 右寄せ */
+  width: min(72%, 280px);
+  pointer-events: none;
+  z-index: 1;             /* 背景(0) < ほーぷちゃん(1) < 吹き出し(2) */
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
+  opacity: .98;
+  animation: floaty 4.8s ease-in-out infinite;
+}
     @keyframes floaty {
       0% { transform: translateY(0) rotate(0.4deg); }
       50% { transform: translateY(-8px) rotate(-0.4deg); }
