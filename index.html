@@ -54,19 +54,18 @@
     .hoap-chat-input input { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px; }
     .hoap-chat-input button { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer; }
 
-    /* ほーぷちゃん：チャット画面下部（質問ボタンの上）に大きめ */
+    /* ほーぷちゃん：質問ボタンの上に大きく。会話は上に被ってOK */
 .mascot {
   position: absolute;
   right: 8px;
-  bottom: 120px;          /* 入力＋質問ボタンにかぶらない位置 */
-  width: min(92%, 320px); /* ほぼ全幅＝大きめ表示 */
-  pointer-events: none;   /* 操作を邪魔しない */
-  z-index: 0;             /* 吹き出しより背面（会話が重なる） */
+  bottom: 180px;          /* ← 120px だと足だけになりがち。180にUP */
+  width: min(92%, 320px); /* デカめ表示 */
+  pointer-events: none;
+  z-index: 2;             /* ← 会話より前面に出す（被ってOK指定） */
   filter: drop-shadow(0 10px 24px rgba(0,0,0,.28));
   opacity: .98;
   animation: floaty 4.8s ease-in-out infinite;
 }
-
 @keyframes floaty {
   0%   { transform: translateY(0) rotate(0.4deg); }
   50%  { transform: translateY(-8px) rotate(-0.4deg); }
@@ -183,6 +182,33 @@
     sendBtn.addEventListener('click', handleInput);
     inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(); });
     quickArea.addEventListener('click', e => { const btn = e.target.closest('button'); if (!btn) return; answer(btn.dataset.intent); });
+
+    function placeMascot() {
+  const mascot = document.querySelector('.mascot');
+  const quick = document.querySelector('.quick');
+  const input = document.querySelector('.hoap-chat-input');
+  if (!mascot || !quick || !input) return;
+  const gap = 8; // ちょい余白
+  const bottom = quick.offsetHeight + input.offsetHeight + gap;
+  mascot.style.bottom = bottom + 'px';
+}
+
+// 初回表示時とリサイズ時に再計算
+window.addEventListener('resize', placeMascot);
+const ro = new ResizeObserver(placeMascot);
+ro.observe(document.querySelector('.quick'));
+ro.observe(document.querySelector('.hoap-chat-input'));
+
+// チャットを開いた直後にも呼ぶ
+function openChat() {
+  dialog.classList.add('open');
+  if (!bodyEl.dataset.welcomed) {
+    botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
+    bodyEl.dataset.welcomed = '1';
+  }
+  placeMascot(); // ← ここ！
+  inputEl.focus();
+}
   </script>
 </body>
 </html>
