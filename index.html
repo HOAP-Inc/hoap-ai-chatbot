@@ -188,7 +188,6 @@
     cases: '事例① 兵庫県の訪問看護ステーション様では人事部門をアウトソーシングして応募が増加。事例②千葉県の介護事業所様ではなんと応募数が2.5倍に。　事例③東京都の訪問看護ステーション様では求職者からDMで応募が来たり面接で「インスタを見て応募を決めました」という声もあるんだ。',
     price: '採用支援は月額10万円〜（求人数・期間により変動）。Instagram運用支援は月額15万円。初期費用は各10万円で提供しているよ！',
     flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能だよ！',
-    contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DMでもOK◎このサイトの「お問い合わせ」ボタンからも連絡できるよ！'
   };
 
   // 吹き出し
@@ -291,12 +290,18 @@ afterBotReply(text)
   });
 
   quickEl.addEventListener('click', e => {
-    const btn = e.target.closest('button'); if (!btn) return;
-    const intent = btn.dataset.intent;
-    if (!intent) return;
-    answer(btn.dataset.intent);
-afterBotReply(btn.textContent);
-  });
+  const btn = e.target.closest('button'); if (!btn) return;
+  const intent = btn.dataset.intent; if (!intent) return;
+
+  if (intent === 'contact') {
+    // ← 遷移先URLを入れて
+    window.location.href = 'https://hoap-inc.jp/contact';
+    return;
+  }
+
+  answer(intent);
+  afterBotReply(btn.textContent);
+});
 
   function openChat() {
     dialog.classList.add('open');
