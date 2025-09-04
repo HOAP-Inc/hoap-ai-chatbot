@@ -37,6 +37,7 @@ export default async function handler(req: any, res: any) {
     const detail = await mod.text()
     return res.status(502).json({ error: 'moderation_error', detail })
   }
+  /* @ts-ignore */
   const modJson = await mod.json()
   if (Array.isArray(modJson.results) && modJson.results[0]?.flagged) {
     return res.status(200).json({
@@ -74,8 +75,9 @@ export default async function handler(req: any, res: any) {
     const detail = await r.text()
     return res.status(502).json({ error: 'openai_error', detail })
   }
-
+/* @ts-ignore */
   const data = await r.json()
+  /* @ts-ignore */
   const reply =
     data.output_text ??
     (Array.isArray(data.output) && data.output[0]?.content?.[0]?.text) ??
