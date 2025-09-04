@@ -233,15 +233,28 @@ function afterBotReply(userText){
 
   // API呼び出し
   async function ask(question) {
-    const res = await fetch('/api/ask', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: question }),
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data.reply || '';
+  const res = await fetch('/api/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: question }),
+  });
+
+  let data = null;
+  try { data = await res.json(); } catch { /* レスポンスがJSONでない場合に備える */ }
+
+  // ステータス異常なら、サーバが返した detail / error をそのままメッセージにする
+  if (!res.ok) {
+    const msg = (data && (data.detail || data.error)) || res.status + ' ' + res.statusText;
+    throw new Error(msg);
   }
+
+  if (data && data.error) {
+    const msg = data.detail || data.error;
+    throw new Error(msg);
+  }
+
+  return (data && data.reply) ? data.reply : '';
+}
 
   // 入力送信 → API
   async function handleInput() {
@@ -258,8 +271,8 @@ function afterBotReply(userText){
 botSay(a || '（空の返答）')
 afterBotReply(text)
     } catch (e) {
-      botSay('サーバでエラーが出た');
-    }
+  botSay(`エラー: ${e?.message || e}`);
+}
   }
 
   // イベント登録（重複禁止・awaitを外に出さない）
