@@ -141,7 +141,7 @@
     </div>
 
     <div class='hoap-chat-input'>
-      <input id='chatInput' type='text' placeholder='質問を入力して送信'>
+      <textarea id='chatInput' rows='2' placeholder='質問を入力して送信'></textarea>
       <button id='sendBtn'>送信</button>
     </div>
   </div>
@@ -189,12 +189,24 @@ function syncMascotWithScroll(){
     };
 
     // API呼び出し関数（新規）
-async function ask(question) {
-  const res = await fetch('/api/ask', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: question }),
-  })
+async function handleInput() {
+  const raw = inputEl.value
+  const text = raw.trim()
+  if (!text) return
+
+  userSay(text)
+
+  // 強制クリアとフォーカス維持（IME残留対策で少し遅延）
+  inputEl.value = ''
+  setTimeout(() => { inputEl.value = ''; inputEl.focus() }, 0)
+
+  try {
+    const a = await ask(text)
+    botSay(a || '（空の返答）')
+  } catch (e) {
+    botSay('サーバでエラーが出た')
+  }
+}
   const data = await res.json()
   if (data.error) throw new Error(data.error)
   return data.reply
@@ -237,8 +249,17 @@ async function handleInput() {
 }
 
     sendBtn.addEventListener('click', () => { handleInput() })
+
+// 日本語IME中のEnterは無視。Ctrl+Enterだけ送信。Enter単体は改行。
+let composing = false
+inputEl.addEventListener('compositionstart', () => { composing = true })
+inputEl.addEventListener('compositionend',   () => { composing = false })
 inputEl.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); handleInput() }
+  if (composing) return
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault()
+    handleInput()
+  }
 })
     quickEl.addEventListener('click', e => {
       const btn = e.target.closest('button'); if (!btn) return;
