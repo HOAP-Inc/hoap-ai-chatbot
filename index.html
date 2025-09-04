@@ -6,14 +6,15 @@
   <title>HOAP サイト用チャット</title>
   <style>
     :root {
-      --z: 2147483000;
-      --radius: 16px;
-      --shadow: 0 8px 24px rgba(0,0,0,.18);
-      --bg: #ffffff;
-      --grad1: #f77737; 
-      --grad2: #fd1d1d; 
-      --grad3: #833ab4; 
-    }
+  --z: 2147483000;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(0,0,0,.18);
+  --bg: #ffffff;
+  /* ピンク→紫 */
+  --grad1: #f472b6; /* pink-400 */
+  --grad2: #d946ef; /* fuchsia-500 */
+  --grad3: #8b5cf6; /* violet-500 */
+}
     * { box-sizing: border-box; }
     .hoap-chat-launcher {
       position: fixed; right: 20px; bottom: 20px; z-index: var(--z);
@@ -38,8 +39,8 @@
   height: 420px;
   overflow-y: auto;
   background: #fafafa;
-  position: relative;   /* これ追加 */
-  z-index: 1;           /* これ追加（会話が前面） */
+  position: relative;
+  z-index: 1; /* 吹き出しを前面 */
 }
     .msg { display: flex; gap: 8px; margin-bottom: 10px; }
     .msg.user { justify-content: flex-end; }
@@ -57,12 +58,12 @@
     /* ほーぷちゃん：質問ボタンの上に大きく。会話は上に被ってOK */
 .mascot {
   position: absolute;
-  right: 8px;
-  bottom: 180px;          /* ← 120px だと足だけになりがち。180にUP */
-  width: min(92%, 320px); /* デカめ表示 */
+  right: 0;                 /* さらに右寄せ */
+  bottom: 140px;            /* さらに下げる。必要なら数値で微調整 */
+  width: min(88%, 320px);   /* 大きめキープ。はみ出し防止で88% */
   pointer-events: none;
-  z-index: 2;             /* ← 会話より前面に出す（被ってOK指定） */
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,.28));
+  z-index: 0;               /* 吹き出しの後ろに配置 */
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
   opacity: .98;
   animation: floaty 4.8s ease-in-out infinite;
 }
@@ -147,6 +148,7 @@
       price: '採用支援は月額10万円〜（求人数・期間により変動）。Instagram運用支援は月額15万円。初期費用は各10万円で提供しているよ！',
       flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能【資料P27】',
       contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DM、または無料相談フォームから【資料P29】'
+};
     };
 
     // 吹き出し
