@@ -47,6 +47,7 @@
     .hoap-chat-body {
       padding: 12px; height: 420px; overflow-y: auto; background: #fafafa;
       position: relative; z-index: 0; /* 背景層 */
+      padding-bottom: calc(12px + var(--uiH, 0px));
     }
 
     .msg { display: flex; gap: 8px; margin-bottom: 10px; position: relative; z-index: 2; }
@@ -79,7 +80,7 @@
 .mascot{
   position: absolute;    /* 基準は .hoap-chat-body */
   right: 8px;
-  bottom: 140px;         /* 初期値。JSで下部UIの高さに合わせて上書き */
+  bottom: calc(8px + var(--uiH, 0px));
   width: min(78%, 300px);
   pointer-events: none;
   z-index: 1;            /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
@@ -154,12 +155,10 @@
 
     // 下のボタン群と入力欄の高さに合わせて、ほーぷちゃんの下端を持ち上げる
 function placeMascot() {
-  const mascot = document.querySelector('.mascot');
-  if (!mascot) return;
   const quickH = document.querySelector('.quick')?.offsetHeight || 0;
   const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
-  const gap = 8;
-  mascot.style.bottom = (quickH + inputH + gap) + 'px';
+  const uiH = quickH + inputH;  // 下部UI合計
+  bodyEl.style.setProperty('--uiH', uiH + 'px');   // ← これだけでOK
 }
     // マスコット固定用
 function syncMascotWithScroll(){
