@@ -10,6 +10,11 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: 'message is required' })
   }
 
+  const verdict = localGuard(message)
+if (!verdict.ok) {
+  return res.status(200).json({ reply: verdict.reply })
+}
+
   // 1) ローカル判定（高速・確実）
   const verdict = localGuard(message)
   if (!verdict.ok) {
@@ -55,13 +60,22 @@ export default async function handler(req: any, res: any) {
       Authorization: 'Bearer ' + process.env.OPENAI_API_KEY,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      input: [
-        { role: 'system', content: SYSTEM_RULES },
-        { role: 'user', content: message },
-      ],
-    }),
+    const SYSTEM_RULES = [
+  '回答はHOAPのサービス関連に限定',
+  '政治・思想・宗教は扱わない',
+  '相手の個人情報は質問しない・保存しない・求めない',
+  '行動の強制はしない。提案は任意で、断れる余地を残す',
+  'サービス外は「扱えない」と明示し、許可トピックへ誘導',
+  '文面は短く端的'
+].join('。')
+
+body: JSON.stringify({
+  model: 'gpt-4o-mini',
+  input: [
+    { role: 'system', content: SYSTEM_RULES },
+    { role: 'user', content: message },
+  ],
+}),
   })
 
   if (!r.ok) {
@@ -118,4 +132,34 @@ function localGuard(text: string): { ok: boolean; reply?: string } {
 
 function normalize(s: string) {
   return s.replace(/\s+/g, '').toLowerCase()
+}
+function localGuard(text: string): { ok: boolean; reply?: string } {
+  const t = text.replace(/\s+/g,'').toLowerCase()
+
+  // サービス関連ワード（ホワイトリスト寄り）
+  const allowHints = [
+    'サービス','料金','プラン','導入','相談','事例','支援',
+    'instagram','インスタ','採用','求人','広報','問い合わせ',
+    'hoap','効果','フロー','始め方','契約'
+  ]
+  const isAllowed = allowHints.some(k => t.includes(k))
+
+  // 政治・思想
+  const politics = ['選挙','政党','政治','与党','野党','憲法','思想','イデオロギー','デモ','国会']
+
+  // 個人情報（要求/提示どちらもNG）
+  const asksPII = /連絡先|電話|メール|住所|生年月日|個人情報|snsアカウント|line|フルネーム/.test(t)
+  const piiPatterns = [
+    /\b\d{2,4}-\d{2,4}-\d{3,4}\b/, // 電話
+    /@/,                            // メール
+    /(〒?\d{3}-\d{4})|都|道|府|県|市|区|町|村/, // 住所ざっくり
+    /\b[0-9]{16}\b/,                // カード番号風
+  ]
+  const hasPII = piiPatterns.some(r => r.test(t))
+
+  if (!isAllowed) return { ok:false, reply:'サービスの話題に限定してる。料金・導入・事例・運用のどれにする？' }
+  if (politics.some(k => t.includes(k))) return { ok:false, reply:'政治や思想は扱わない設定にしてる。サービス関連なら答えられるよ。' }
+  if (asksPII || hasPII) return { ok:false, reply:'個人情報は聞かない運用にしてる。サービス範囲の質問ならどうぞ。' }
+
+  return { ok:true }
 }
