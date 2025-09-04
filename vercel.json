@@ -16,3 +16,13 @@
     "api/**/*.ts": { "runtime": "nodejs20.x" }
   }
 }
+{
+  "version": 3,
+  "functions": {
+    "api/**/*.ts": { "runtime": "nodejs20.x" }
+  },
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
