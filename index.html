@@ -33,8 +33,14 @@
     .hoap-chat-header .title { font-weight: 700; font-size: 14px; }
     .hoap-chat-header .sub { font-size: 12px; opacity: .9; }
     .hoap-chat-close { margin-left: auto; background: transparent; color: #fff; border: none; font-size: 18px; cursor: pointer; }
-    .hoap-chat-body { padding: 12px; height: 420px; overflow-y: auto; background: #fafafa; }
-
+    .hoap-chat-body {
+  padding: 12px;
+  height: 420px;
+  overflow-y: auto;
+  background: #fafafa;
+  position: relative;   /* これ追加 */
+  z-index: 1;           /* これ追加（会話が前面） */
+}
     .msg { display: flex; gap: 8px; margin-bottom: 10px; }
     .msg.user { justify-content: flex-end; }
     .bubble { padding: 10px 12px; border-radius: 14px; max-width: 80%; line-height: 1.4; font-size: 14px; }
@@ -48,18 +54,24 @@
     .hoap-chat-input input { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px; }
     .hoap-chat-input button { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer; }
 
-    /* ほーぷちゃん：画面右下に大きめ、ふわふわアニメ */
-    .mascot {
-      position: absolute; right: 8px; bottom: 8px; width: clamp(84px, 22%, 120px);
-      pointer-events: none; /* 操作を邪魔しない */
-      z-index: 2; filter: drop-shadow(0 6px 16px rgba(0,0,0,.25));
-      animation: floaty 4.8s ease-in-out infinite;
-    }
-    @keyframes floaty {
-      0% { transform: translateY(0) rotate(0.5deg); }
-      50% { transform: translateY(-6px) rotate(-0.5deg); }
-      100% { transform: translateY(0) rotate(0.5deg); }
-    }
+    /* ほーぷちゃん：チャット画面下部（質問ボタンの上）に大きめ */
+.mascot {
+  position: absolute;
+  right: 8px;
+  bottom: 120px;          /* 入力＋質問ボタンにかぶらない位置 */
+  width: min(92%, 320px); /* ほぼ全幅＝大きめ表示 */
+  pointer-events: none;   /* 操作を邪魔しない */
+  z-index: 0;             /* 吹き出しより背面（会話が重なる） */
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.28));
+  opacity: .98;
+  animation: floaty 4.8s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%   { transform: translateY(0) rotate(0.4deg); }
+  50%  { transform: translateY(-8px) rotate(-0.4deg); }
+  100% { transform: translateY(0) rotate(0.4deg); }
+}
     @media (prefers-reduced-motion: reduce) {
       .mascot { animation: none; }
     }
