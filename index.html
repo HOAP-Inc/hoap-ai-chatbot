@@ -43,11 +43,9 @@
     .hoap-chat-header .sub { font-size: 12px; opacity: .9; }
     .hoap-chat-close { margin-left: auto; background: transparent; color: #fff; border: none; font-size: 18px; cursor: pointer; }
 
-    /* 本文（吹き出し=前景 / ほーぷちゃん=中景） */
     .hoap-chat-body {
       padding: 12px; height: 420px; overflow-y: auto; background: #fafafa;
-      position: relative; /* ★ ほーぷちゃんの基準 */
-      z-index: 0;
+      position: relative; z-index: 0;
     }
 
     .msg { display: flex; gap: 8px; margin-bottom: 10px; position: relative; z-index: 2; }
@@ -76,14 +74,14 @@
       color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer;
     }
 
-    /* ★ ほーぷちゃん：本文の中で絶対配置（背景の上・吹き出しの下） */
+    /* ★ ほーぷちゃん：チャット全体基準（.hoap-chat）で右下固定、吹き出しの“後ろ” */
     .mascot{
-      position: absolute;       /* hoap-chat-body を基準 */
+      position: absolute;    /* 親: .hoap-chat */
       right: 8px;
-      bottom: 140px;            /* 仮値。JSで上書き */
+      bottom: 148px;         /* 初期値：後でJSで上書き */
       width: min(78%, 300px);
       pointer-events: none;
-      z-index: 1;               /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
+      z-index: 1;            /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
       filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
       opacity: .98;
       animation: floaty 4.8s ease-in-out infinite;
@@ -110,10 +108,10 @@
       <button class='hoap-chat-close' aria-label='閉じる'>×</button>
     </div>
 
-    <!-- ★ ほーぷちゃんは本文の“中”に置く -->
-    <div class='hoap-chat-body' id='chatBody'>
-      <img class='mascot' src='hoap-basic.png' alt='HOAP-chan'>
-    </div>
+    <!-- ★ ほーぷちゃんは本文の“外”、.hoap-chat直下で固定表示 -->
+    <img class='mascot' src='hoap-basic.png' alt='HOAP-chan'>
+
+    <div class='hoap-chat-body' id='chatBody'></div>
 
     <div class='quick' id='quickArea'>
       <button data-intent='about'>サービス概要</button>
@@ -135,7 +133,7 @@
   </div>
 
   <script>
-    // 要素参照
+    // 要素
     const bodyEl   = document.getElementById('chatBody');
     const inputEl  = document.getElementById('chatInput');
     const sendBtn  = document.getElementById('sendBtn');
@@ -144,9 +142,9 @@
     const launcher = document.querySelector('.hoap-chat-launcher');
     const dialog   = document.querySelector('.hoap-chat');
     const closeBtn = document.querySelector('.hoap-chat-close');
-    const mascot  = document.querySelector('.mascot');
+    const mascot   = document.querySelector('.mascot');
 
-    // ナレッジ（資料準拠）
+    // KB
     const KB = {
       about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
       trend: '求職者は応募前にSNSで情報収集する時代。求職者の8割がSNSで気になる会社を検索し、職場の雰囲気や人間関係を確認してから応募するんだ。',
@@ -160,12 +158,12 @@
       contact: 'お問い合わせはメール（info@hoap-inc.jp）、SNS DMでもOK◎このChatに連絡先を教えてもらえれば担当者から折り返すこともできるよ。'
     };
 
-    // ほーぷちゃんの下マージン＝質問ボタン＋送信欄の高さで確保
+    // ほーぷちゃんの下端を「質問ボタン+入力欄の高さ」に合わせる
     function placeMascot() {
       if (!mascot) return;
       const quickH = document.querySelector('.quick')?.offsetHeight || 0;
       const inputH = document.querySelector('.hoap-chat-input')?.offsetHeight || 0;
-      const gap = 10;
+      const gap = 8;
       mascot.style.bottom = (quickH + inputH + gap) + 'px';
     }
 
@@ -179,19 +177,16 @@
       wrap.appendChild(bub);
       bodyEl.appendChild(wrap);
       bodyEl.scrollTop = bodyEl.scrollHeight;
-      placeMascot(); // 高さ変化に追従
     }
     const botSay  = (t)=>addMsg('bot', t);
     const userSay = (t)=>addMsg('user', t);
 
-    // ボタン押下：まずユーザー吹き出し→次に回答
     function answer(intent) {
       const btn = quickEl.querySelector(`[data-intent='${intent}']`);
       if (btn) userSay(btn.textContent);
       botSay(KB[intent] || '資料にない質問だよ。別のボタンを押してみて！');
     }
 
-    // 自由入力（今は案内のみ）
     function handleInput() {
       const text = inputEl.value.trim();
       if (!text) return;
@@ -222,7 +217,7 @@
     launcher.addEventListener('click', openChat);
     closeBtn.addEventListener('click', closeChat);
 
-    // リサイズ等で再計算
+    // 高さ変化に追従
     window.addEventListener('resize', placeMascot);
     if (window.ResizeObserver) {
       const ro = new ResizeObserver(placeMascot);
@@ -232,7 +227,7 @@
       if (i) ro.observe(i);
     }
 
-    // 初期
+    // 初期計算
     placeMascot();
   </script>
 </body>
