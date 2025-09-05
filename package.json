@@ -1,6 +1,11 @@
 {
-  "devDependencies": {
-    "typescript": "^5.4.0",
+  "private": true,
+  "name": "hoap-ai-chatbot",
+  "version": "0.0.0",
+  "dependencies": {
     "@types/node": "^20.11.30"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
   }
 }
