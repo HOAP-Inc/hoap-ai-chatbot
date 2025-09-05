@@ -2,12 +2,6 @@
   "version": 2,
   "headers": [
     {
-      "source": "/_nuxt/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
-      ]
-    },
-    {
       "source": "/api/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
@@ -16,5 +10,8 @@
         { "key": "Access-Control-Max-Age", "value": "86400" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/((?!api).*)", "destination": "/index.html" }
   ]
 }
