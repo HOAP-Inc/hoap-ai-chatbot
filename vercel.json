@@ -18,7 +18,9 @@
     }
   ],
   "functions": {
-    "api/**/*.{js,ts}": { "runtime": "nodejs20.x" }
+    "api/**/*.{js,ts}": {
+      // runtimeは不要。必要なら maxDuration や memory だけ書ける
+    }
   },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
