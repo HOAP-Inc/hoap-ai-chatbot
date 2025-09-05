@@ -1,35 +1,60 @@
 // api/ask.js
 
-// Vercel を Node 実行に固定（Edge だと process が無い）
+// Node ランタイム固定
 module.exports.config = { runtime: 'nodejs20.x' }
 
-// 許可オリジン（必要に応じて追加）
-const ALLOW_ORIGINS = new Set([
-  'https://hoap-inc.jp',
-  'https://www.hoap-inc.jp',
-])
+// 許可オリジン判定
+function isAllowedOrigin(origin) {
+  if (!origin) return false
+  try {
+    const u = new URL(origin)
+    const host = u.host
+
+    // 本番
+    if (host === 'hoap-inc.jp' || host === 'www.hoap-inc.jp') return true
+
+    // サブドメイン一括許可例: app.hoap-inc.jp 等があるならここで許可
+    if (host.endsWith('.hoap-inc.jp')) return true
+
+    // 開発
+    if (host.startsWith('localhost:')) return true
+    if (host.endsWith('.vercel.app')) return true
+
+    return false
+  } catch {
+    return false
+  }
+}
 
 // CORS ヘルパ
-function setCors(res, origin) {
-  if (origin && ALLOW_ORIGINS.has(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-  } else {
-    // 許可外は明示的に閉じる（必要なら * にしてもよい）
-    res.setHeader('Access-Control-Allow-Origin', 'https://hoap-inc.jp')
-  }
+function setCors(req, res) {
+  const origin =
+    req.headers.origin ||
+    req.headers.Origin ||
+    req.headers.ORG ||
+    ''
+
+  const allow = isAllowedOrigin(origin)
   res.setHeader('Vary', 'Origin')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.setHeader('Access-Control-Max-Age', '86400') // 24h
+
+  if (allow) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  } else {
+    // 本番だけ許可、その他は明示的に本番オリジンへ固定
+    res.setHeader('Access-Control-Allow-Origin', 'https://hoap-inc.jp')
+  }
 }
 
 module.exports = async function handler(req, res) {
-  const origin = req.headers.origin
-  setCors(res, origin)
+  setCors(req, res)
 
   if (req.method === 'OPTIONS') return res.status(204).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' })
 
-  const ct = req.headers['content-type'] || ''
+  const ct = String(req.headers['content-type'] || req.headers['Content-Type'] || '')
   if (!ct.includes('application/json')) {
     return res.status(400).json({ error: 'invalid_content_type' })
   }
@@ -53,12 +78,10 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({ model: 'omni-moderation-latest', input: message }),
     })
-
     if (!mod.ok) {
       const detail = await mod.text()
       return res.status(502).json({ error: 'moderation_error', status: mod.status, detail })
     }
-
     const modJson = await mod.json()
     if (Array.isArray(modJson.results) && modJson.results[0]?.flagged) {
       return res.status(200).json({
@@ -74,6 +97,7 @@ module.exports = async function handler(req, res) {
     '回答はHOAPのサービス（医療介護歯科業界の採用支援・SNSを活用した採用広報支援）に関する話題に限定',
     '自社の人材の採用に関する話しはしない',
     'ユーザーの「採用」というワードはすべてユーザーの会社の採用の話と見做す',
+    'ユーザーの採用や人事の悩みに共感し簡単なアドバイスをする',
     '政治・思想・宗教の話題は扱わない',
     '相手の個人情報を質問しない・保存しない・求めない',
     '行動の強制はしない。提案は任意で、断れる余地を必ず残す',
@@ -137,9 +161,9 @@ function localGuard(text) {
   ]
   const hasPII = piiPatterns.some(r => r.test(t))
 
-  if (!isAllowed) return { ok:false, reply:'サービスの話題に限定してる。料金・導入・事例・運用のどれにする？' }
+  if (!isAllowed) return { ok:false, reply:'サービスの話題しか話せないんだ。料金・導入・事例・運用のどれにする？' }
   if (politics.some(k => t.includes(k))) return { ok:false, reply:'政治や思想は扱わない設定にしてる。サービス関連なら答えられるよ。' }
-  if (asksPII || hasPII) return { ok:false, reply:'個人情報は聞かない運用にしてる。サービス範囲の質問ならどうぞ。' }
+  if (asksPII || hasPII) return { ok:false, reply:'個人情報は聞かない運用にしてるんだ。サービス範囲の質問ならどうぞ。' }
 
   return { ok:true }
 }
