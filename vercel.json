@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 2,
   "headers": [
     {
       "source": "/(.*)",
@@ -11,9 +11,8 @@
       ]
     }
   ],
- "functions": {
-  "api/**/*.{js,ts}": { "runtime": "nodejs20.x" }
-}
+  "functions": {
+    "api/**/*.{js,ts}": { "runtime": "nodejs20.x" }
   },
   "routes": [
     { "handle": "filesystem" },
