@@ -20,9 +20,7 @@
   "functions": {
     "api/**/*.{js,ts}": { "runtime": "nodejs20.x" }
   },
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "handle": "filesystem" },
-    { "src": "/(?!api/).*", "dest": "/public/index.html" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
