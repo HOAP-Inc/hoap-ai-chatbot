@@ -1,8 +1,5 @@
 // api/ask.js
 
-// Node ランタイム固定
-module.exports.config = { runtime: 'nodejs20.x' }
-
 // 許可オリジン判定
 function isAllowedOrigin(origin) {
   if (!origin) return false
