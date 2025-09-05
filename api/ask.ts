@@ -1,6 +1,12 @@
 // @ts-nocheck
 
-declare const process: any;
+// process を直参照しない（型定義不要）
+const ENV =
+  (typeof globalThis !== 'undefined' &&
+    (globalThis as any) &&
+    (globalThis as any).process &&
+    (globalThis as any).process.env) ||
+  {};
 
 // /api/ask.ts
 export default async function handler(req: any, res: any) {
@@ -28,7 +34,7 @@ export default async function handler(req: any, res: any) {
   const mod = await fetch('https://api.openai.com/v1/moderations', {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer ' + process.env.OPENAI_API_KEY,
+      Authorization: 'Bearer ' + (ENV.OPENAI_API_KEY || ''),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -60,25 +66,25 @@ export default async function handler(req: any, res: any) {
   ].join('。')
 
   const r = await fetch('https://api.openai.com/v1/responses', {
-  method: 'POST',
-  headers: {
-    Authorization: 'Bearer ' + process.env.OPENAI_API_KEY,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    model: 'gpt-4o-mini',
-    input: [
-      { role: 'system', content: SYSTEM_RULES },
-      { role: 'user', content: message },
-    ],
-  }),
-})
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + (ENV.OPENAI_API_KEY || ''),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      input: [
+        { role: 'system', content: SYSTEM_RULES },
+        { role: 'user', content: message },
+      ],
+    }),
+  })
 
   if (!r.ok) {
     const detail = await r.text()
     return res.status(502).json({ error: 'openai_error', detail })
   }
-/* @ts-ignore */
+  /* @ts-ignore */
   const data = await r.json()
   /* @ts-ignore */
   const reply =
