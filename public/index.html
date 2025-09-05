@@ -190,6 +190,8 @@
       if (sameCount >= 2) { botSay('よかったらHOAPに相談してみない？問い合わせフォームを押してね！'); sameCount = 0; }
     }
 
+    const API_ORIGIN = 'https://hoap-ai-chatbot.vercel.app';
+
     async function ask(question) {
       const res = await fetch('/api/ask', {
         method: 'POST',
