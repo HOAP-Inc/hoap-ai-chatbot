@@ -4,10 +4,7 @@
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://hoap-inc.jp https://www.hoap-inc.jp"
-        }
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://hoap-inc.jp https://www.hoap-inc.jp" }
       ]
     }
   ],
@@ -15,7 +12,8 @@
     "api/**/*.{js,ts}": { "runtime": "nodejs20.x" }
   },
   "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },     // ← 先頭に追加（APIは必ず関数に流す）
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/index.html" }      // ← SPA用キャッチオールは最後に
   ]
 }
