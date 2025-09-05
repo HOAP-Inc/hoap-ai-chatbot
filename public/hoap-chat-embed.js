@@ -28,7 +28,7 @@
   });
 
   const body = document.createElement('div');
-  Object.assign(body.style, { padding:'12px', height:'420px', overflowY:'auto', background:'#fafafa' });
+  Object.assign(body.style, { padding:'12px', height:'320px', overflowY:'auto', background:'#fafafa' });
 
   const inputBar = document.createElement('div');
   Object.assign(inputBar.style, { display:'flex', gap:'8px', padding:'10px', borderTop:'1px solid #e5e7eb', background:'#fff' });
