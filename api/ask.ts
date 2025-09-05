@@ -1,10 +1,13 @@
 // @ts-nocheck
+
+declare const process: any;
+
 // /api/ask.ts
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', 'https://hoap-inc.jp/'); // 埋め込み元
-　res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-　res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-　if (req.method === 'OPTIONS') return res.status(204).end();
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' })
   if (!req.headers['content-type']?.includes('application/json')) {
     return res.status(400).json({ error: 'invalid_content_type' })
