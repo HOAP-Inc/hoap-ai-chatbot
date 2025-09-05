@@ -12,16 +12,16 @@
     const tpl = document.createElement('template');
     tpl.innerHTML = `
       <style>
-        :host { all: initial; }
-        :root {
-          --z: 2147483000;
-          --radius: 16px;
-          --shadow: 0 8px 24px rgba(0,0,0,.18);
-          --bg: #ffffff;
-          --grad1: #f9a8d4;
-          --grad2: #d8b4fe;
-          --grad3: #c4b5fd;
-        }
+        :host {
+  all: initial;
+  --z: 2147483000;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(0,0,0,.18);
+  --bg: #ffffff;
+  --grad1: #f9a8d4;
+  --grad2: #d8b4fe;
+  --grad3: #c4b5fd;
+}
         * { box-sizing: border-box; font: inherit; }
         .hoap-chat-launcher {
           position: fixed; right: 20px; bottom: 20px; z-index: var(--z);
