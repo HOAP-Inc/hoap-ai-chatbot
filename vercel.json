@@ -17,11 +17,6 @@
       ]
     }
   ],
-  "functions": {
-    "api/**/*.{js,ts}": {
-      // runtimeは不要。必要なら maxDuration や memory だけ書ける
-    }
-  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
