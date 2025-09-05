@@ -26,26 +26,28 @@ function isAllowedOrigin(origin) {
   }
 }
 
-// CORS ヘルパ
+// CORS ヘルパ（srcdoc/同一オリジン考慮）
 function setCors(req, res) {
-  const origin =
-    req.headers.origin ||
-    req.headers.Origin ||
-    req.headers.ORG ||
-    ''
+  const origin = String(req.headers.origin || req.headers.Origin || '')
+  const hasOrigin = origin.length > 0
 
-  const allow = isAllowedOrigin(origin)
   res.setHeader('Vary', 'Origin')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  res.setHeader('Access-Control-Max-Age', '86400') // 24h
+  res.setHeader('Access-Control-Max-Age', '86400')
 
-  if (allow) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-  } else {
-    // 本番だけ許可、その他は明示的に本番オリジンへ固定
-    res.setHeader('Access-Control-Allow-Origin', 'https://hoap-inc.jp')
+  // iframe.srcdoc / about:srcdoc からのリクエストは Origin ヘッダが null または未送信になる
+  // この場合に限り、ワイルドカードで許可（認証Cookieは使っていないので安全）
+  if (!hasOrigin || origin === 'null') {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    return
   }
+
+  // 通常の外部オリジンはホワイトリストで許可
+  if (isAllowedOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+  // 許可外は何も付けない（ミスマッチ回避のため固定先は返さない）
 }
 
 module.exports = async function handler(req, res) {
