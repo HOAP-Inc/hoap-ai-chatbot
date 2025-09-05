@@ -89,19 +89,17 @@
     }
 
     /* ★ ほーぷちゃん：本文内で右下固定（スクロールに連動しない）、吹き出しの後ろ */
-.mascot{
-  position: absolute;    /* 基準は .hoap-chat-body */
-  right: 8px;
-  bottom: 20px;
-  width: min(78%, 300px);
-  pointer-events: none;
-  z-index: 1;            /* 背景(0) < ほーぷ(1) < 吹き出し(2) */
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
-  opacity: .98;
-
-  /* スクロール打消し。JSで --scrollY を更新 */
-  transform: translateY(var(--scrollY, 0px));
-}
+.hoap-chat-mascot{
+    position: absolute;
+    right: 8px;
+    bottom: 20px;
+    width: min(78%, 300px);
+    pointer-events: none;
+    z-index: 1;
+    filter: drop-shadow(0 10px 24px rgba(0,0,0,.22));
+    opacity: .98;
+    transform: translateY(var(--scrollY, 0px));
+  }
 
 .mascot-sprite{
   display: block; width: 100%; height: auto;
@@ -126,7 +124,7 @@
   }
   .bubble{ font-size: 13px; }
   .hoap-chat-input textarea{ font-size: 13px; }
-  .mascot{ width: min(65%, 220px); bottom: 12px; }
+  .hoap-chat-mascot{ width: min(65%, 220px); bottom: 12px; }
 }
 @media (max-width: 360px){
   .hoap-chat{ width: 280px; right: 10px; bottom: 72px; }
@@ -149,7 +147,7 @@
     <!-- ★ ほーぷちゃんは本文(.hoap-chat-body)の“中”に置く -->
     <!-- ここを置き換え -->
 <div class='hoap-chat-body' id='chatBody'>
-  <div class='mascot' aria-hidden='true'>
+  <div class='hoap-chat-mascot' aria-hidden='true'>
     <img class='mascot-sprite' src='hoap-basic.png' alt='HOAP-chan'>
   </div>
 </div>
@@ -185,12 +183,12 @@
 
   // マスコット位置調整
   function placeMascot() {
-    const mascot = document.querySelector('.mascot');
+    const mascot = document.querySelector('.hoap-chat-mascot');
     if (!mascot) return;
     mascot.style.setProperty('bottom', '12px', 'important');
   }
   function syncMascotWithScroll(){
-    const mascot = document.querySelector('.mascot');
+    const mascot = document.querySelector('.hoap-chat-mascot');
     if(!mascot) return;
     mascot.style.setProperty('--scrollY', bodyEl.scrollTop + 'px');
   }
