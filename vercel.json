@@ -1,23 +1,7 @@
 {
   "version": 2,
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" },
-        { "key": "Access-Control-Max-Age", "value": "86400" }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://hoap-inc.jp https://www.hoap-inc.jp" }
-      ]
-    }
-  ],
-  "rewrites": [
-    { "source": "/(?!api/)(?!.*\\..*$).*", "destination": "/public/index.html" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(?!api/).*", "dest": "/index.html" }
   ]
 }
