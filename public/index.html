@@ -22,35 +22,30 @@
   --grad2: #d8b4fe;
   --grad3: #c4b5fd;
 }
-        * { box-sizing: border-box; font: inherit; }
-        .hoap-chat-launcher {
-          position: fixed; right: 20px; bottom: 20px; z-index: var(--z);
-          width: 64px; height: 64px; border-radius: 999px; border: none; cursor: pointer;
-          background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
-          color: #fff; font-size: 24px; display: grid; place-items: center;
-          box-shadow: var(--shadow);
-        }
-        .hoap-chat {
+* { box-sizing: border-box; font: inherit; }
+
+.hoap-chat-launcher {
+  position: fixed; right: 20px; bottom: 20px; z-index: var(--z);
+  width: 64px; height: 64px; border-radius: 999px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
+  color: #fff; font-size: 24px; display: grid; place-items: center;
+  box-shadow: var(--shadow);
+}
+
+/* ✅ チャット全体を“少しだけ”小さく */
+.hoap-chat {
   position: fixed; right: 20px; bottom: 100px; z-index: var(--z);
-  width: 360px; max-width: calc(100vw - 40px);
+  width: 320px;                                /* 360px → 320px */
+  max-width: calc(100vw - 40px);
   background: var(--bg); border-radius: var(--radius); box-shadow: var(--shadow);
   border: 1px solid #e5e7eb; isolation: isolate;
   display: none; flex-direction: column; overflow: hidden;
   max-height: 100vh; height: auto;
 }
 
-/* PC専用 */
-@media (min-width: 769px) {
-  .hoap-chat {
-    top: 20px;      /* これを入れると高さがぐっと広がる */
-    bottom: 20px;
-    height: auto;
-    max-height: none;
-  }
-}
-√
+/* ❌ PC専用ブロックは削除（top/bottom 両指定で“上に伸びる”原因だった） */
 
-/* スマホ画面のときに上書き */
+/* スマホ画面のときに上書き（そのまま） */
 @media (max-width: 480px) {
   .hoap-chat {
     right: 0;
@@ -61,47 +56,60 @@
     border-radius: 0;
   }
 }
-        .open { display: flex; }
-        .hoap-chat-header {
-          padding: 12px 14px;
-          background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
-          color: #fff; display: flex; align-items: center; gap: 10px;
-        }
-        .title { font-weight: 700; font-size: 14px; }
-        .sub { font-size: 12px; opacity: .9; }
-        .hoap-chat-close { margin-left: auto; background: transparent; color: #fff; border: none; font-size: 18px; cursor: pointer; }
-        .hoap-chat-body {
-          padding: 12px; overflow-y: auto; background: #fafafa;
-          position: relative; z-index: 0;
-          padding-bottom: calc(12px + var(--uiH, 0px));
-          flex: 1; min-height: 0;
-        }
-        .msg { display: flex; gap: 8px; margin-bottom: 10px; position: relative; z-index: 2; }
-        .user { justify-content: flex-end; }
-        .bubble { padding: 10px 12px; border-radius: 14px; max-width: 80%; line-height: 1.4; font-size: 14px; }
-        .bot .bubble { background: #fff; border: 1px solid #e5e7eb; }
-        .user .bubble { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; }
-        .hoap-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-top: 1px solid #e5e7eb; background: #fff; }
-        .hoap-quick button { border: 1px solid #e5e7eb; background: #fff; border-radius: 999px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
-        .hoap-chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e5e7eb; background: #fff; }
-        .hoap-chat-input textarea { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px; resize: none; }
-        .hoap-chat-input button { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer; }
-        .mascot{
-          position: absolute; right: 8px; bottom: 20px;
-          width: min(78%, 300px); pointer-events: none; z-index: 1;
-          filter: drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity: .98;
-          transform: translateY(var(--scrollY, 0px));
-        }
-        .mascot-sprite{ display: block; width: 100%; height: auto; animation: floaty 4.8s ease-in-out infinite; }
-        @keyframes floaty { 0% { transform: translateY(0) rotate(0.4deg);} 50% { transform: translateY(-8px) rotate(-0.4deg);} 100% { transform: translateY(0) rotate(0.4deg);} }
-        @media (prefers-reduced-motion: reduce) { .mascot-sprite { animation: none; } }
-        @media (max-width: 480px){
-          .hoap-chat{ width: 300px; right: 12px; bottom: 76px; max-width: calc(100vw - 24px); }
-          .bubble{ font-size: 13px; }
-          .hoap-chat-input textarea{ font-size: 13px; }
-          .mascot{ width: min(65%, 220px); bottom: 12px; }
-        }
-        @media (max-width: 360px){ .hoap-chat{ width: 280px; right: 10px; bottom: 72px; } .bubble{ font-size: 12px; } }
+
+.open { display: flex; }
+
+.hoap-chat-header {
+  padding: 12px 14px;
+  background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
+  color: #fff; display: flex; align-items: center; gap: 10px;
+}
+.title { font-weight: 700; font-size: 14px; }
+.sub { font-size: 12px; opacity: .9; }
+.hoap-chat-close { margin-left: auto; background: transparent; color: #fff; border: none; font-size: 18px; cursor: pointer; }
+
+.hoap-chat-body {
+  padding: 12px; overflow-y: auto; background: #fafafa;
+  position: relative; z-index: 0;
+  padding-bottom: calc(12px + var(--uiH, 0px));
+  flex: 1; min-height: 0;
+}
+
+.msg { display: flex; gap: 8px; margin-bottom: 10px; position: relative; z-index: 2; }
+.user { justify-content: flex-end; }
+.bubble { padding: 10px 12px; border-radius: 14px; max-width: 80%; line-height: 1.4; font-size: 14px; }
+.bot .bubble { background: #fff; border: 1px solid #e5e7eb; }
+.user .bubble { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; }
+
+.hoap-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-top: 1px solid #e5e7eb; background: #fff; }
+.hoap-quick button { border: 1px solid #e5e7eb; background: #fff; border-radius: 999px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+.hoap-chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e5e7eb; background: #fff; }
+.hoap-chat-input textarea { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px; resize: none; }
+.hoap-chat-input button { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer; }
+
+/* ✅ ほーぷちゃん：少し小さく＆右下固定を強める */
+.mascot{
+  position: absolute; right: 12px; bottom: 12px;   /* 右下 */
+  width: min(60%, 200px);                           /* 小さめ */
+  pointer-events: none; z-index: 1;
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity: .98;
+  transform: translateY(var(--scrollY, 0px));
+}
+.mascot-sprite{ display: block; width: 100%; height: auto; animation: floaty 4.8s ease-in-out infinite; }
+@keyframes floaty { 0% { transform: translateY(0) rotate(0.4deg);} 50% { transform: translateY(-8px) rotate(-0.4deg);} 100% { transform: translateY(0) rotate(0.4deg);} }
+@media (prefers-reduced-motion: reduce) { .mascot-sprite { animation: none; } }
+
+/* 既存のスマホ最適化は維持（必要なら後で調整） */
+@media (max-width: 480px){
+  .hoap-chat{ width: 300px; right: 12px; bottom: 76px; max-width: calc(100vw - 24px); }
+  .bubble{ font-size: 13px; }
+  .hoap-chat-input textarea{ font-size: 13px; }
+  .mascot{ width: min(65%, 220px); bottom: 12px; }
+}
+@media (max-width: 360px){
+  .hoap-chat{ width: 280px; right: 10px; bottom: 72px; }
+  .bubble{ font-size: 12px; }
+}
       </style>
 
       <button class="hoap-chat-launcher" aria-label="チャットを開く">💬</button>
