@@ -32,29 +32,17 @@
   box-shadow: var(--shadow);
 }
 
-/* ✅ チャット全体を“少しだけ”小さく */
+/* チャット全体：ちょい小さく＆高さは常に80vhで安定 */
 .hoap-chat {
-  position: fixed; right: 20px; bottom: 100px; z-index: var(--z);
-  width: 320px;                                /* 360px → 320px */
+  position: fixed; right: 20px; bottom: 20px; z-index: var(--z); /* ← 20px固定 */
+  width: 320px;                                   /* ← 360px → 320px */
   max-width: calc(100vw - 40px);
   background: var(--bg); border-radius: var(--radius); box-shadow: var(--shadow);
   border: 1px solid #e5e7eb; isolation: isolate;
-  display: none; flex-direction: column; overflow: hidden;
-  max-height: 100vh; height: auto;
-}
-
-/* ❌ PC専用ブロックは削除（top/bottom 両指定で“上に伸びる”原因だった） */
-
-/* スマホ画面のときに上書き（そのまま） */
-@media (max-width: 480px) {
-  .hoap-chat {
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-height: 100vh;
-    height: 100vh;
-    border-radius: 0;
-  }
+  display: none;                                   /* .openでdisplay:flexになる */
+  flex-direction: column; overflow: hidden;
+  height: 80vh;                                    /* ← 高さ固定 */
+  max-height: 80vh;
 }
 
 .open { display: flex; }
@@ -87,10 +75,10 @@
 .hoap-chat-input textarea { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; font-size: 14px; resize: none; }
 .hoap-chat-input button { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; border: none; padding: 0 14px; border-radius: 10px; cursor: pointer; }
 
-/* ✅ ほーぷちゃん：少し小さく＆右下固定を強める */
+/* ほーぷちゃん：PCは控えめ／右下固定 */
 .mascot{
-  position: absolute; right: 12px; bottom: 12px;   /* 右下 */
-  width: min(60%, 200px);                           /* 小さめ */
+  position: absolute; right: 12px; bottom: 12px;
+  width: min(60%, 200px);
   pointer-events: none; z-index: 1;
   filter: drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity: .98;
   transform: translateY(var(--scrollY, 0px));
@@ -99,16 +87,16 @@
 @keyframes floaty { 0% { transform: translateY(0) rotate(0.4deg);} 50% { transform: translateY(-8px) rotate(-0.4deg);} 100% { transform: translateY(0) rotate(0.4deg);} }
 @media (prefers-reduced-motion: reduce) { .mascot-sprite { animation: none; } }
 
-/* 既存のスマホ最適化は維持（必要なら後で調整） */
+/* スマホ：全高・全幅、ほーぷちゃんさらに小さく右下 */
 @media (max-width: 480px){
-  .hoap-chat{ width: 300px; right: 12px; bottom: 76px; max-width: calc(100vw - 24px); }
-  .bubble{ font-size: 13px; }
-  .hoap-chat-input textarea{ font-size: 13px; }
-  .mascot{ width: min(65%, 220px); bottom: 12px; }
-}
-@media (max-width: 360px){
-  .hoap-chat{ width: 280px; right: 10px; bottom: 72px; }
-  .bubble{ font-size: 12px; }
+  .hoap-chat{
+    right: 0; bottom: 0; width: 100%;
+    height: 100vh; max-height: 100vh; border-radius: 0;
+  }
+  .mascot{
+    right: 8px; bottom: 8px;
+    width: min(45%, 140px);   /* ← スマホはもっと小さく */
+  }
 }
       </style>
 
