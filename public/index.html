@@ -264,15 +264,22 @@
     });
 
     function openChat() {
-      dialog.classList.add('open');
-      if (!bodyEl.dataset.welcomed) {
-        botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
-        bodyEl.dataset.welcomed = '1';
-      }
-      placeMascot();
-      syncMascotWithScroll();
-      inputEl.focus();
-    }
+  dialog.classList.add('open');
+
+  if (!bodyEl.dataset.welcomed) {
+    botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
+    bodyEl.dataset.welcomed = '1';
+  }
+
+  placeMascot();
+  syncMascotWithScroll();
+
+  // ★スマホでは自動フォーカスしない（=キーボードを自動で出さない）
+  var isMobile = window.matchMedia('(max-width: 480px)').matches;
+  if (!isMobile) {
+    setTimeout(function(){ inputEl.focus(); }, 0);
+  }
+}
     function closeChat() { dialog.classList.remove('open'); }
 
     // Shadow内のランチャーを使う（外にあるボタンは無視してOK）
@@ -280,9 +287,19 @@
     if (outerLauncher) outerLauncher.style.display = 'none'; // 外のは非表示
 
     const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
-    innerLauncher.addEventListener('click', openChat);
-    closeBtn.addEventListener('click', closeChat);
-    window.addEventListener('resize', placeMascot);
-    bodyEl.addEventListener('scroll', syncMascotWithScroll);
+if (innerLauncher) {
+  // ★タッチ最適化＆最前面を明示（万一の被り対策）
+  innerLauncher.style.setProperty('touch-action', 'manipulation', 'important');
+  innerLauncher.style.setProperty('z-index', '2147483001', 'important');
+
+  // ★クリックに加えて pointer/touch でも確実に開く
+  innerLauncher.addEventListener('click', openChat);
+  innerLauncher.addEventListener('pointerup', function(){ openChat(); });
+  innerLauncher.addEventListener('touchend', function(e){ e.preventDefault(); openChat(); }, { passive: false });
+}
+
+closeBtn.addEventListener('click', closeChat);
+window.addEventListener('resize', placeMascot);
+bodyEl.addEventListener('scroll', syncMascotWithScroll);
   </script>
 </body>
