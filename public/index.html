@@ -1,3 +1,7 @@
+あなたが変な解釈をしているので下記の状態に戻しました。
+下記にしたところ、PCはバーセル側でもチャットボタンを押す→Chatが出る、の初期状態に戻りました。
+ただしスマホはチャットボタンを押してもチャットが出ません。
+
 <body>
   <!-- ランチャーだけは外に置く（サイトJSに干渉されないよう最小） -->
   <button class="hoap-chat-launcher" aria-label="チャットを開く">💬</button>
@@ -264,22 +268,15 @@
     });
 
     function openChat() {
-  dialog.classList.add('open');
-
-  if (!bodyEl.dataset.welcomed) {
-    botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
-    bodyEl.dataset.welcomed = '1';
-  }
-
-  placeMascot();
-  syncMascotWithScroll();
-
-  // ★スマホでは自動フォーカスしない（=キーボードを自動で出さない）
-  var isMobile = window.matchMedia('(max-width: 480px)').matches;
-  if (!isMobile) {
-    setTimeout(function(){ inputEl.focus(); }, 0);
-  }
-}
+      dialog.classList.add('open');
+      if (!bodyEl.dataset.welcomed) {
+        botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
+        bodyEl.dataset.welcomed = '1';
+      }
+      placeMascot();
+      syncMascotWithScroll();
+      inputEl.focus();
+    }
     function closeChat() { dialog.classList.remove('open'); }
 
     // Shadow内のランチャーを使う（外にあるボタンは無視してOK）
@@ -287,19 +284,9 @@
     if (outerLauncher) outerLauncher.style.display = 'none'; // 外のは非表示
 
     const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
-if (innerLauncher) {
-  // ★タッチ最適化＆最前面を明示（万一の被り対策）
-  innerLauncher.style.setProperty('touch-action', 'manipulation', 'important');
-  innerLauncher.style.setProperty('z-index', '2147483001', 'important');
-
-  // ★クリックに加えて pointer/touch でも確実に開く
-  innerLauncher.addEventListener('click', openChat);
-  innerLauncher.addEventListener('pointerup', function(){ openChat(); });
-  innerLauncher.addEventListener('touchend', function(e){ e.preventDefault(); openChat(); }, { passive: false });
-}
-
-closeBtn.addEventListener('click', closeChat);
-window.addEventListener('resize', placeMascot);
-bodyEl.addEventListener('scroll', syncMascotWithScroll);
+    innerLauncher.addEventListener('click', openChat);
+    closeBtn.addEventListener('click', closeChat);
+    window.addEventListener('resize', placeMascot);
+    bodyEl.addEventListener('scroll', syncMascotWithScroll);
   </script>
 </body>
