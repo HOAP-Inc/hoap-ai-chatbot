@@ -90,12 +90,28 @@
 /* スマホ：全高・全幅、ほーぷちゃんさらに小さく右下 */
 @media (max-width: 480px){
   .hoap-chat{
-    right: 0; bottom: 0; width: 100%;
-    height: 100vh; max-height: 100vh; border-radius: 0;
+    /* 画面をぴったりカバー。iOS/Androidのキーボードでも潰れにくくする */
+    position: fixed; inset: 0;
+    width: 100%;
+    height: 100dvh;          /* 新世代の動的ビューポート */
+    max-height: 100dvh;
+    border-radius: 0;
   }
+  /* 100dvh非対応ブラウザ向けフォールバック（--vh を使用） */
+  @supports not (height: 100dvh){
+    .hoap-chat{
+      height: calc(var(--vh, 1vh) * 100);
+      max-height: calc(var(--vh, 1vh) * 100);
+    }
+  }
+
+  .hoap-chat-body{
+    overscroll-behavior: contain; /* 入力時の暴れるスクロールを抑制 */
+  }
+
   .mascot{
     right: 8px; bottom: 8px;
-    width: min(45%, 140px);   /* ← スマホはもっと小さく */
+    width: min(45%, 140px);   /* スマホでは小さめ */
   }
 }
       </style>
