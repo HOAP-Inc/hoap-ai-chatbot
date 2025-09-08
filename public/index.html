@@ -309,14 +309,21 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', upda
 }
     function closeChat() { dialog.classList.remove('open'); }
 
-    // Shadow内のランチャーを使う（外にあるボタンは無視してOK）
-    const outerLauncher = document.querySelector('.hoap-chat-launcher');
-    if (outerLauncher) outerLauncher.style.display = 'none'; // 外のは非表示
+    // 外側のランチャーだけを有効にする（中のは非表示・イベント登録しない）
+const outerLauncher = document.querySelector('.hoap-chat-launcher');
+if (outerLauncher) {
+  outerLauncher.style.removeProperty('display');     // 外の💬を表示
+  outerLauncher.addEventListener('click', openChat);  // 外から開く
+}
 
-    const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
-    innerLauncher.addEventListener('click', openChat);
-    closeBtn.addEventListener('click', closeChat);
-    window.addEventListener('resize', placeMascot);
-    bodyEl.addEventListener('scroll', syncMascotWithScroll);
+// Shadow内のランチャーは常に非表示（使わない）
+const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
+if (innerLauncher) {
+  innerLauncher.style.display = 'none';
+}
+
+closeBtn.addEventListener('click', closeChat);
+window.addEventListener('resize', placeMascot);
+bodyEl.addEventListener('scroll', syncMascotWithScroll);
   </script>
 </body>
