@@ -279,12 +279,14 @@
     }
     function closeChat() { dialog.classList.remove('open'); }
 
-    // Shadow内のランチャーを使う（外にあるボタンは無視してOK）
-    const outerLauncher = document.querySelector('.hoap-chat-launcher');
-    if (outerLauncher) outerLauncher.style.display = 'none'; // 外のは非表示
+    // 外のボタンは完全に削除
+const outerLauncher = document.querySelector('.hoap-chat-launcher');
+if (outerLauncher) outerLauncher.remove(); // display:noneじゃなくて削除！
 
-    const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
-    innerLauncher.addEventListener('click', openChat);
+// Shadow内のボタンにイベント
+const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
+innerLauncher.addEventListener('click', openChat);
+innerLauncher.addEventListener('touchend', openChat); // タッチイベントも追加
     closeBtn.addEventListener('click', closeChat);
     window.addEventListener('resize', placeMascot);
     bodyEl.addEventListener('scroll', syncMascotWithScroll);
