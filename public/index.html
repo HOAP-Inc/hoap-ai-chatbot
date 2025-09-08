@@ -8,16 +8,6 @@
     document.body.appendChild(mount);
     const shadow = mount.attachShadow({ mode: 'open' });
 
-    // ★追記：モバイルの実画面高（キーボード開閉を考慮）をCSS変数 --vh に反映
-function updateVH(){
-  var h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
-  // Shadow host（mount）に --vh を設定（:host から参照される）
-  mount.style.setProperty('--vh', (h * 0.01) + 'px');
-}
-updateVH();
-window.addEventListener('resize', updateVH);
-if (window.visualViewport) window.visualViewport.addEventListener('resize', updateVH);
-
     // チャットの中身（元のCSS/HTML/JSをほぼそのまま）
     const tpl = document.createElement('template');
     tpl.innerHTML = `
@@ -100,28 +90,12 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', upda
 /* スマホ：全高・全幅、ほーぷちゃんさらに小さく右下 */
 @media (max-width: 480px){
   .hoap-chat{
-    /* 画面をぴったりカバー。iOS/Androidのキーボードでも潰れにくくする */
-    position: fixed; inset: 0;
-    width: 100%;
-    height: 100dvh;          /* 新世代の動的ビューポート */
-    max-height: 100dvh;
-    border-radius: 0;
+    right: 0; bottom: 0; width: 100%;
+    height: 100vh; max-height: 100vh; border-radius: 0;
   }
-  /* 100dvh非対応ブラウザ向けフォールバック（--vh を使用） */
-  @supports not (height: 100dvh){
-    .hoap-chat{
-      height: calc(var(--vh, 1vh) * 100);
-      max-height: calc(var(--vh, 1vh) * 100);
-    }
-  }
-
-  .hoap-chat-body{
-    overscroll-behavior: contain; /* 入力時の暴れるスクロールを抑制 */
-  }
-
   .mascot{
     right: 8px; bottom: 8px;
-    width: min(45%, 140px);   /* スマホでは小さめ */
+    width: min(45%, 140px);   /* ← スマホはもっと小さく */
   }
 }
       </style>
@@ -290,40 +264,25 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', upda
     });
 
     function openChat() {
-  dialog.classList.add('open');
-
-  // 初回メッセージ
-  if (!bodyEl.dataset.welcomed) {
-    botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
-    bodyEl.dataset.welcomed = '1';
-  }
-
-  placeMascot();
-  syncMascotWithScroll();
-
-  // ★ここが肝：モバイルでは自動フォーカスしない（＝キーボードを自動で出さない）
-  var isMobile = window.matchMedia('(max-width: 480px)').matches;
-  if (!isMobile) {
-    setTimeout(function(){ inputEl.focus(); }, 0); // PCだけフォーカス
-  }
-}
+      dialog.classList.add('open');
+      if (!bodyEl.dataset.welcomed) {
+        botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
+        bodyEl.dataset.welcomed = '1';
+      }
+      placeMascot();
+      syncMascotWithScroll();
+      inputEl.focus();
+    }
     function closeChat() { dialog.classList.remove('open'); }
 
-    // 外側のランチャーだけを有効にする（中のは非表示・イベント登録しない）
-const outerLauncher = document.querySelector('.hoap-chat-launcher');
-if (outerLauncher) {
-  outerLauncher.style.removeProperty('display');     // 外の💬を表示
-  outerLauncher.addEventListener('click', openChat);  // 外から開く
-}
+    // Shadow内のランチャーを使う（外にあるボタンは無視してOK）
+    const outerLauncher = document.querySelector('.hoap-chat-launcher');
+    if (outerLauncher) outerLauncher.style.display = 'none'; // 外のは非表示
 
-// Shadow内のランチャーは常に非表示（使わない）
-const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
-if (innerLauncher) {
-  innerLauncher.style.display = 'none';
-}
-
-closeBtn.addEventListener('click', closeChat);
-window.addEventListener('resize', placeMascot);
-bodyEl.addEventListener('scroll', syncMascotWithScroll);
+    const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
+    innerLauncher.addEventListener('click', openChat);
+    closeBtn.addEventListener('click', closeChat);
+    window.addEventListener('resize', placeMascot);
+    bodyEl.addEventListener('scroll', syncMascotWithScroll);
   </script>
 </body>
