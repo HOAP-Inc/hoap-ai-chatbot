@@ -61,12 +61,12 @@
 
       /* ほーぷちゃん：本文の“中”で右下固定。z=1（メッセージの後ろ） */
       .mascot{
-  position:absolute;
-  right:0px;                /* 右に寄せる */
-  bottom:4px;               /* 下に寄せる（クイック欄のすぐ上） */
-  left:auto;                 /* 念のため中央寄せを打ち消す */
-  margin:0;                  /* 中央寄せ要素を防ぐ */
-  transform:none;            /* 余計な中央寄せが効いていたら打ち消す */
+position:absolute;
+right: 0;                                /* もっと右 */
+bottom: calc(4px + var(--uiH, 0px));     /* もっと下（クイック＋入力の高さ分だけ持ち上げる） */
+left: auto;                               /* 以前の left 指定を打ち消す */
+transform: none;                          /* 以前の translate 指定を打ち消す */
+margin: 0;                                /* 中央寄せの余計な margin:auto を打ち消す */
 
   width: 300px;              /* 少し大きめ固定サイズ */
   max-width: calc(100% - 24px);
