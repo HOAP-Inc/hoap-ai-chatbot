@@ -80,7 +80,8 @@
 
       @media (max-width:480px){
         .chat{ right:0; bottom:0; width:100%; height:100vh; max-height:100vh; border-radius:0; }
-        .mascot{ right:8px; bottom:8px; width:min(54%, 180px); }
+        .mascot{ right:8px; bottom:calc(8px + var(--uiH, 0px)); width:min(54%, 180px); }
+        .quick, .inp{ position:relative; z-index:3; }
       }
     </style>
 
