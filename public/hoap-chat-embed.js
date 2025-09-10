@@ -99,6 +99,17 @@
 
   /* 念のため前面に（重なり見え対策のみ） */
   .quick, .inp{ position:relative; z-index:3; }
+  
+  .quick{
+    padding:6px 8px;   /* 10px→小さめ */
+    gap:6px;           /* 8px→6px */
+  }
+  .quick button{
+    padding:4px 8px;   /* 6px 10px→小さめ */
+    font-size:11px;    /* 12px→11px */
+    border-radius:999px;
+    line-height:1.1;
+  }
 }
     </style>
 
