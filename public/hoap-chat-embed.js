@@ -4,10 +4,12 @@
   const API    = ORIGIN + '/api/ask';
   const IMG    = ORIGIN + '/hoap-basic.png';
 
+  // Shadow DOM
   const mount  = document.createElement('div');
   document.body.appendChild(mount);
   const shadow = mount.attachShadow({ mode: 'open' });
 
+  // UI
   const tpl = document.createElement('template');
   tpl.innerHTML = `
     <style>
@@ -65,17 +67,25 @@
   `;
   shadow.appendChild(tpl.content.cloneNode(true));
 
-  const $ = s => shadow.querySelector(s);
-  const dialog = $('.chat'), launcher = $('.launcher'), closeBtn = $('.close');
-  const bodyEl = $('#body'), quickEl = $('#quick'), ta = $('#ta'), send = $('#send');
+  // 要素取得（※ここで1回だけ宣言）
+  const $       = s => shadow.querySelector(s);
+  const dialog  = $('.chat');
+  const launcher= $('.launcher');
+  const closeBtn= $('.close');
+  const bodyEl  = $('#body');
+  const quickEl = $('#quick');
+  const ta      = $('#ta');
+  const send    = $('#send');
 
+  // プリセット
   const presets = [
     ['about','サービス概要'], ['trend','採用トレンド'], ['challenge','採用課題'],
     ['solution','HOAPの解決法'], ['feature','支援の特徴'], ['insta','Instagram運用'],
     ['cases','事例紹介'], ['price','料金'], ['flow','導入フロー'], ['contact','問い合わせ']
   ];
-  quickEl.innerHTML = presets.map(([k,v]) => '<button data-k=' + k + '>' + v + '</button>').join('');
+  quickEl.innerHTML = presets.map(([k,v]) => `<button data-k="${k}">${v}</button>`).join('');
 
+  // 定型回答
   const KB = {
     about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
     trend: '求職者は応募前にSNSで情報収集する時代。求職者の8割がSNSで気になる会社を検索し、職場の雰囲気や人間関係を確認してから応募するんだ。',
@@ -88,6 +98,7 @@
     flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！'
   };
 
+  // 吹き出し
   function addMsg(side, text){
     const row = document.createElement('div');
     row.className = 'msg ' + side;
@@ -103,6 +114,7 @@
   const userSay = t => addMsg('user', t);
   const botSay  = t => addMsg('bot',  t);
 
+  // API
   async function ask(q){
     const res = await fetch(API, {
       method: 'POST', mode: 'cors',
@@ -115,6 +127,7 @@
     return (data && data.reply) || '';
   }
 
+  // 送信
   async function handle(){
     const t = ta.value.trim(); if (!t) return;
     userSay(t); ta.value = '';
@@ -122,6 +135,7 @@
     catch(e){ botSay('エラー: ' + (e && e.message || e)); }
   }
 
+  // CTA
   function afterBotReply(userText){
     const k = userText.toLowerCase();
     const key = k.includes('料金') || k.includes('price') ? 'price'
@@ -136,6 +150,7 @@
     if (dialog.__cnt >= 2){ botSay('よかったらHOAPに相談してみない？問い合わせフォームを押してね！'); dialog.__cnt = 0; }
   }
 
+  // 入力系
   let composing = false;
   send.addEventListener('click', handle);
   ta.addEventListener('compositionstart', () => { composing = true; });
@@ -145,6 +160,7 @@
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); handle(); }
   });
 
+  // 開閉
   function openChat(){
     dialog.classList.add('open');
     if (!bodyEl.dataset.welcomed){
@@ -155,18 +171,18 @@
   }
   function closeChat(){ dialog.classList.remove('open'); }
 
-  const launcher = shadow.querySelector('.launcher');
-  const closeBtn = shadow.querySelector('.close');
-  const quickEl  = shadow.querySelector('#quick');
+  // ボタン（※重複宣言なし）
   launcher.addEventListener('click', openChat);
   launcher.addEventListener('touchend', openChat);
   closeBtn.addEventListener('click', closeChat);
+
+  // プリセット
   quickEl.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     const k = b.dataset.k;
     if (k === 'contact'){ window.location.href = 'https://hoap-inc.jp/contact'; return; }
     userSay(b.textContent);
     botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
-    afterBotReply(b.textContent);
+    afterBotReply(b.text内容);
   });
 })();
