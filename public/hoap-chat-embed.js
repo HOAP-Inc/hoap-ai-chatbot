@@ -64,13 +64,13 @@
       /* ほーぷちゃん：本文の“中”で右下固定。z=1（メッセージの後ろ） */
       .mascot{
   position:absolute;
-  right:12px;                /* 右に寄せる */
-  bottom:12px;               /* 下に寄せる（クイック欄のすぐ上） */
+  right:4px;                /* 右に寄せる */
+  bottom:4px;               /* 下に寄せる（クイック欄のすぐ上） */
   left:auto;                 /* 念のため中央寄せを打ち消す */
   margin:0;                  /* 中央寄せ要素を防ぐ */
   transform:none;            /* 余計な中央寄せが効いていたら打ち消す */
 
-  width: 260px;              /* 少し大きめ固定サイズ */
+  width: 300px;              /* 少し大きめ固定サイズ */
   max-width: calc(100% - 24px);
   pointer-events:none;
   z-index:1;                 /* メッセージ(.msg)より後ろ */
