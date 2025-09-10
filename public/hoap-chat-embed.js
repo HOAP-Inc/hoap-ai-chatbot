@@ -64,10 +64,10 @@
       .mascot{
   position:absolute;
   right:12px;
-  bottom: calc(100% + 8px);   /* ← クイック欄の“上”に移動 */
-  width:min(80%, 300px);      /* ← さらに大きく */
+  bottom: calc(12px + var(--uiH, 0px)); /* ← クイック＋入力の高さぶん持ち上げる */
+  width: min(85%, 320px);                /* ← もう少し大きく */
   pointer-events:none;
-  z-index:1;                  /* 背景 < マスコット < メッセージ */
+  z-index:1;  /* 背景 < マスコット < メッセージ */
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
   opacity:.98;
 }
@@ -114,6 +114,12 @@
   const quickEl  = $('#quick');
   const ta       = $('#ta');
   const send     = $('#send');
+  const inpEl    = shadow.querySelector('.inp'); // ← 追加
+
+  function syncUIHeights(){
+  const uiH = (quickEl?.offsetHeight || 0) + (inpEl?.offsetHeight || 0);
+  dialog.style.setProperty('--uiH', uiH + 'px');
+}
 
   // プリセット
   const presets = [
@@ -198,13 +204,14 @@
 
   // 開閉
   function openChat(){
-    dialog.classList.add('open');
-    if (!bodyEl.dataset.welcomed){
-      botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
-      bodyEl.dataset.welcomed = '1';
-    }
-    ta.focus();
+  dialog.classList.add('open');
+  if (!bodyEl.dataset.welcomed){
+    botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
+    bodyEl.dataset.welcomed = '1';
   }
+  syncUIHeights();   // ★ 追加
+  ta.focus();
+}
   function closeChat(){ dialog.classList.remove('open'); }
 
   // ボタン
@@ -222,4 +229,12 @@
     botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
     afterBotReply(b.textContent);
   });
+  // 下部UIの高さを監視して反映
+const ro = new ResizeObserver(syncUIHeights);
+ro.observe(quickEl);
+ro.observe(inpEl);
+window.addEventListener('resize', syncUIHeights);
+
+// 初期1回反映
+syncUIHeights();
 })();
