@@ -14,7 +14,7 @@
   tpl.innerHTML = `
     <style>
       :host{ all:initial; --z:2147483000; --r:16px; --sh:0 8px 24px rgba(0,0,0,.18);
-             --bg:#fff; --g1:#f9a8d4; --g2:#d8b4fe; --g3:#c4b5fd; }
+             --bg:#fff; --g1:#f9a8d4; --g2:#d8b4fe; --g3:#c4b5fd; --uiH:0px; }
       *{ box-sizing:border-box; font:inherit; }
       .launcher{ position:fixed; right:20px; bottom:20px; z-index:var(--z);
         width:64px; height:64px; border-radius:999px; border:none; cursor:pointer;
@@ -40,11 +40,16 @@
       .inp textarea{ flex:1; border:1px solid #e5e7eb; border-radius:10px; padding:10px; font-size:14px; resize:none; }
       .inp button{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; border:none; padding:0 14px; border-radius:10px; cursor:pointer; }
 
-      /* ほーぷちゃん：チャット箱に対して右下固定（スクロールの外） */
+      /* ほーぷちゃん：下部UI（クイック＋入力）の高さだけ持ち上げる */
       .mascot{
-        position:absolute; right:12px; bottom:12px;   /* ← .chat を基準に固定 */
-        width:min(62%,220px); pointer-events:none; z-index:1;
-        filter:drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity:.98;
+        position:absolute;
+        right:12px;
+        bottom: calc(12px + var(--uiH)); /* ← 下部UIの合計高さを反映 */
+        width:min(62%,220px);
+        pointer-events:none;
+        z-index:1;
+        filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
+        opacity:.98;
         transform: translateY(0);
       }
       .mascot img{ display:block; width:100%; height:auto; animation:floaty 4.8s ease-in-out infinite; }
@@ -52,7 +57,7 @@
       @media (prefers-reduced-motion:reduce){ .mascot img{ animation:none; } }
       @media (max-width:480px){
         .chat{ right:0; bottom:0; width:100%; height:100vh; max-height:100vh; border-radius:0; }
-        .mascot{ right:8px; bottom:8px; width:min(45%,140px); }
+        .mascot{ right:8px; width:min(45%,140px); }
       }
     </style>
 
@@ -66,26 +71,33 @@
 
       <div class='body' id='body'></div>
       <div class='quick' id='quick'></div>
-      <div class='inp'>
+      <div class='inp' id='inp'>
         <textarea id='ta' rows='2' placeholder='質問を入力して送信'></textarea>
         <button id='send'>送信</button>
       </div>
 
-      <!-- ★ マスコットを .chat 直下に配置（スクロール領域の外） -->
+      <!-- マスコットは .chat 直下（スクロール外） -->
       <div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
     </div>
   `;
   shadow.appendChild(tpl.content.cloneNode(true));
 
   // 要素取得（1回だけ宣言）
-  const $       = s => shadow.querySelector(s);
-  const dialog  = $('.chat');
-  const launcher= $('.launcher');
-  const closeBtn= $('.close');
-  const bodyEl  = $('#body');
-  const quickEl = $('#quick');
-  const ta      = $('#ta');
-  const send    = $('#send');
+  const $        = s => shadow.querySelector(s);
+  const dialog   = $('.chat');
+  const launcher = $('.launcher');
+  const closeBtn = $('.close');
+  const bodyEl   = $('#body');
+  const quickEl  = $('#quick');
+  const inpEl    = $('#inp');
+  const ta       = $('#ta');
+  const send     = $('#send');
+
+  // 下部UIの高さを反映（マスコットのbottomに使う）
+  function syncUIHeights(){
+    const uiH = (quickEl?.offsetHeight || 0) + (inpEl?.offsetHeight || 0);
+    dialog.style.setProperty('--uiH', (uiH + 4) + 'px'); // 少し余白+4px
+  }
 
   // プリセット
   const presets = [
@@ -175,9 +187,16 @@
       botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
       bodyEl.dataset.welcomed = '1';
     }
+    syncUIHeights(); // ← 開く度に反映
     ta.focus();
   }
   function closeChat(){ dialog.classList.remove('open'); }
+
+  // 高さ変化の監視（レイアウト変動に追従）
+  const ro = new ResizeObserver(syncUIHeights);
+  ro.observe(quickEl);
+  ro.observe(inpEl);
+  window.addEventListener('resize', syncUIHeights);
 
   // ボタン
   launcher.addEventListener('click', openChat);
@@ -193,4 +212,7 @@
     botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
     afterBotReply(b.textContent);
   });
+
+  // 初期反映
+  syncUIHeights();
 })();
