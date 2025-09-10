@@ -62,11 +62,15 @@
 
       /* ほーぷちゃん：本文の“中”で右下固定。z=1（メッセージの後ろ） */
       .mascot{
-        position:absolute; right:12px; bottom:12px;
-        width:min(72%, 260px);           /* ちょい大きく */
-        pointer-events:none; z-index:1;  /* 背景 < マスコット < メッセージ */
-        filter:drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity:.98;
-      }
+  position:absolute;
+  right:12px;
+  bottom: calc(100% + 8px);   /* ← クイック欄の“上”に移動 */
+  width:min(80%, 300px);      /* ← さらに大きく */
+  pointer-events:none;
+  z-index:1;                  /* 背景 < マスコット < メッセージ */
+  filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
+  opacity:.98;
+}
       .mascot img{ display:block; width:100%; height:auto; animation:floaty 4.8s ease-in-out infinite; }
       @keyframes floaty{0%{transform:translateY(0) rotate(.4deg);}50%{transform:translateY(-8px) rotate(-.4deg);}100%{transform:translateY(0) rotate(.4deg);}}
       @media (prefers-reduced-motion:reduce){ .mascot img{ animation:none; } }
