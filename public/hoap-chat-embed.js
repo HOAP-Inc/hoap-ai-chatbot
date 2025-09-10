@@ -39,8 +39,14 @@
       .inp{ display:flex; gap:8px; padding:10px; border-top:1px solid #e5e7eb; background:#fff; }
       .inp textarea{ flex:1; border:1px solid #e5e7eb; border-radius:10px; padding:10px; font-size:14px; resize:none; }
       .inp button{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; border:none; padding:0 14px; border-radius:10px; cursor:pointer; }
-      .mascot{ position:absolute; right:12px; bottom:12px; width:min(62%,220px); pointer-events:none; z-index:1;
-               filter:drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity:.98; transform:translateY(var(--sy,0px)); }
+
+      /* ほーぷちゃん：常に右下に固定（スクロールで動かさない） */
+      .mascot{
+        position:absolute; right:12px; bottom:12px;
+        width:min(62%,220px); pointer-events:none; z-index:1;
+        filter:drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity:.98;
+        transform: translateY(0); /* ← 固定 */
+      }
       .mascot img{ display:block; width:100%; height:auto; animation:floaty 4.8s ease-in-out infinite; }
       @keyframes floaty{0%{transform:translateY(0) rotate(.4deg);}50%{transform:translateY(-8px) rotate(-.4deg);}100%{transform:translateY(0) rotate(.4deg);}}
       @media (prefers-reduced-motion:reduce){ .mascot img{ animation:none; } }
@@ -67,7 +73,7 @@
   `;
   shadow.appendChild(tpl.content.cloneNode(true));
 
-  // 要素取得（※ここで1回だけ宣言）
+  // 要素取得（1回だけ宣言）
   const $       = s => shadow.querySelector(s);
   const dialog  = $('.chat');
   const launcher= $('.launcher');
@@ -89,7 +95,7 @@
   const KB = {
     about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
     trend: '求職者は応募前にSNSで情報収集する時代。求職者の8割がSNSで気になる会社を検索し、職場の雰囲気や人間関係を確認してから応募するんだ。',
-    challenge: 'よく相談される課題は 応募が来ない 時間がない 離職が多い。診療や訪問に追われ、採用に手が回らない経営者も多いんだ。',
+    challenge: 'よく相談される課題は 応募が来ない 時間がない 离職が多い。診療や訪問に追われ、採用に手が回らない経営者も多いんだ。',
     solution: 'HOAPは業界特化のノウハウで応募を集め、媒体運用 スカウト 面接日調整 採用広報のSNS運用など実務まで代行しているよ。経営者や事務スタッフはコア業務に専念できるんだ！',
     feature: '特徴は3つ。1 欲しい人材像を明確化 2 媒体運用やスカウト送付を代行 3 毎月データ分析と改善提案',
     insta: 'Instagram運用支援では、差別化と共感される投稿を設計し、ファン化を狙うよ。写真提供とアンケート回答、投稿前チェックだけでOK！',
@@ -98,7 +104,7 @@
     flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！'
   };
 
-  // 吹き出し
+  // 吹き出し（※スクロール量でマスコットを動かさない）
   function addMsg(side, text){
     const row = document.createElement('div');
     row.className = 'msg ' + side;
@@ -108,8 +114,6 @@
     row.appendChild(bub);
     bodyEl.appendChild(row);
     bodyEl.scrollTop = bodyEl.scrollHeight;
-    const m = shadow.querySelector('.mascot');
-    if (m) m.style.setProperty('--sy', bodyEl.scrollTop + 'px');
   }
   const userSay = t => addMsg('user', t);
   const botSay  = t => addMsg('bot',  t);
@@ -171,7 +175,7 @@
   }
   function closeChat(){ dialog.classList.remove('open'); }
 
-  // ボタン（※重複宣言なし）
+  // ボタン
   launcher.addEventListener('click', openChat);
   launcher.addEventListener('touchend', openChat);
   closeBtn.addEventListener('click', closeChat);
@@ -183,6 +187,6 @@
     if (k === 'contact'){ window.location.href = 'https://hoap-inc.jp/contact'; return; }
     userSay(b.textContent);
     botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
-    afterBotReply(b.text内容);
+    afterBotReply(b.textContent); // ← タイポ修正
   });
 })();
