@@ -62,6 +62,7 @@
       /* ほーぷちゃん：本文の“中”で右下固定。z=1（メッセージの後ろ） */
       .mascot{
   position:absolute;
+  inset:auto;
   right:0;                               /* 右端ぴったり（これ以上右はありません） */
   bottom:calc(2px + var(--uiH, 0px));    /* “さらに下”= 下部UIのすぐ上に2pxだけ余白 */
   width:300px;
@@ -69,6 +70,9 @@
   z-index:1;
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
   opacity:.98;
+  left:auto;
+  transform:none;
+  margin:0;
 }
       .mascot img{ display:block; width:100%; height:auto; animation:floaty 4.8s ease-in-out infinite; }
       @keyframes floaty{0%{transform:translateY(0) rotate(.4deg);}50%{transform:translateY(-8px) rotate(-.4deg);}100%{transform:translateY(0) rotate(.4deg);}}
