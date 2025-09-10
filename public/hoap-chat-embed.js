@@ -63,10 +63,12 @@
       .mascot{
   position:absolute;
   right:12px;
-  bottom: calc(12px + var(--uiH, 0px)); /* ← クイック＋入力の高さぶん持ち上げる */
-  width: min(85%, 320px);                /* ← もう少し大きく */
+  left:auto;                 /* 念のため左位置を無効化 */
+  bottom:12px;               /* ← 固定で“クイック欄の上”に配置 */
+  width: 320px;              /* ← もう少し大きく（はみ出し防止は次行） */
+  max-width: calc(100% - 24px);
   pointer-events:none;
-  z-index:1;  /* 背景 < マスコット < メッセージ */
+  z-index:1;                 /* メッセージ(.msg z=2)の後ろ */
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
   opacity:.98;
 }
