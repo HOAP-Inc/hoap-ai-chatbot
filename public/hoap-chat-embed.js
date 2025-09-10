@@ -61,17 +61,12 @@
 
       /* ほーぷちゃん：本文の“中”で右下固定。z=1（メッセージの後ろ） */
       .mascot{
-position:absolute;
-right: 0;                                /* もっと右 */
-bottom: calc(4px + var(--uiH, 0px));     /* もっと下（クイック＋入力の高さ分だけ持ち上げる） */
-left: auto;                               /* 以前の left 指定を打ち消す */
-transform: none;                          /* 以前の translate 指定を打ち消す */
-margin: 0;                                /* 中央寄せの余計な margin:auto を打ち消す */
-
-  width: 300px;              /* 少し大きめ固定サイズ */
-  max-width: calc(100% - 24px);
+  position:absolute;
+  right:0;                              /* 右端 */
+  bottom:calc(var(--uiH, 0px));         /* クイック＋入力欄ぶん持ち上げる */
+  width:300px;
   pointer-events:none;
-  z-index:1;                 /* メッセージ(.msg)より後ろ */
+  z-index:1;                            /* メッセージより後ろ */
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
   opacity:.98;
 }
@@ -95,10 +90,8 @@ margin: 0;                                /* 中央寄せの余計な margin:aut
 
      <div class='body'>
   <div class='scroll' id='body'></div>
-  <!-- ★ .body の“中”に移動。スクロールの外、でも本文の中 -->
-  <div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
 </div>
-
+ <div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
 <div class='quick' id='quick'></div>
 <div class='inp'>
   <textarea id='ta' rows='2' placeholder='質問を入力して送信'></textarea>
