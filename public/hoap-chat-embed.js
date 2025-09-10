@@ -63,13 +63,13 @@
       .mascot{
   position:absolute;
   right:12px;                /* 右に寄せる */
-  bottom:12px;               /* 下に寄せる（クイック欄のすぐ上） */
+  bottom: calc(var(--uiH, 0px) + 12px); /* 下部UIの高さぶん上げる */
   left:auto;                 /* 念のため中央寄せを打ち消す */
   margin:0;                  /* 中央寄せ要素を防ぐ */
   transform:none;            /* 余計な中央寄せが効いていたら打ち消す */
 
   width: 260px;              /* 少し大きめ固定サイズ */
-  max-width: calc(100% - 24px);
+  max-width: calc(100% - 0px);
   pointer-events:none;
   z-index:1;                 /* メッセージ(.msg)より後ろ */
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
