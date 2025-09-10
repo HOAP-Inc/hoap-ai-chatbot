@@ -29,35 +29,43 @@
            color:#fff; display:flex; align-items:center; gap:10px; }
       .ttl{ font-weight:700; font-size:14px; } .sub{ font-size:12px; opacity:.9; }
       .close{ margin-left:auto; background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer; }
-      .body{ padding:12px; overflow-y:auto; background:#fafafa; position:relative; z-index:0; flex:1; min-height:0; }
-      .msg{ display:flex; gap:8px; margin-bottom:10px; position:relative; z-index:2; }
+
+      /* ▼ ここがポイント：z-indexは“親のレイヤ”で勝負させる */
+      .body{
+        padding:12px; overflow-y:auto; background:#fafafa;
+        position:relative;
+        z-index:2;          /* 本体をレイヤ2に */
+        flex:1; min-height:0;
+      }
+      .msg{ display:flex; gap:8px; margin-bottom:10px; position:relative; }
       .bubble{ padding:10px 12px; border-radius:14px; max-width:80%; line-height:1.4; font-size:14px; }
       .bot .bubble{ background:#fff; border:1px solid #e5e7eb; }
       .user{ justify-content:flex-end; } .user .bubble{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; }
+
       .quick{ display:flex; flex-wrap:wrap; gap:8px; padding:10px 12px; border-top:1px solid #e5e7eb; background:#fff; }
       .quick button{ border:1px solid #e5e7eb; background:#fff; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }
       .inp{ display:flex; gap:8px; padding:10px; border-top:1px solid #e5e7eb; background:#fff; }
       .inp textarea{ flex:1; border:1px solid #e5e7eb; border-radius:10px; padding:10px; font-size:14px; resize:none; }
       .inp button{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; border:none; padding:0 14px; border-radius:10px; cursor:pointer; }
 
-      /* ほーぷちゃん：下部UI（クイック＋入力）の高さだけ持ち上げる */
+      /* ほーぷちゃん：本体(body)より“下”、チャット枠より“上”のレイヤ1に固定 */
       .mascot{
         position:absolute;
         right:12px;
-        bottom: calc(12px + var(--uiH)); /* ← 下部UIの合計高さを反映 */
-        width:min(62%,220px);
+        bottom: calc(12px + var(--uiH));
+        width:min(72%, 260px);        /* 少し大きく */
         pointer-events:none;
-        z-index:1;
+        z-index:1;                    /* body(2) <--- mascot(1) <--- chat(親) */
         filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
         opacity:.98;
-        transform: translateY(0);
+        transform:translateY(0);
       }
       .mascot img{ display:block; width:100%; height:auto; animation:floaty 4.8s ease-in-out infinite; }
       @keyframes floaty{0%{transform:translateY(0) rotate(.4deg);}50%{transform:translateY(-8px) rotate(-.4deg);}100%{transform:translateY(0) rotate(.4deg);}}
       @media (prefers-reduced-motion:reduce){ .mascot img{ animation:none; } }
       @media (max-width:480px){
         .chat{ right:0; bottom:0; width:100%; height:100vh; max-height:100vh; border-radius:0; }
-        .mascot{ right:8px; width:min(45%,140px); }
+        .mascot{ right:8px; width:min(54%, 180px); }   /* モバイルでも少し大きめ */
       }
     </style>
 
@@ -82,7 +90,7 @@
   `;
   shadow.appendChild(tpl.content.cloneNode(true));
 
-  // 要素取得（1回だけ宣言）
+  // 要素
   const $        = s => shadow.querySelector(s);
   const dialog   = $('.chat');
   const launcher = $('.launcher');
@@ -93,10 +101,10 @@
   const ta       = $('#ta');
   const send     = $('#send');
 
-  // 下部UIの高さを反映（マスコットのbottomに使う）
+  // UI高さを反映（マスコットのbottom調整に使用）
   function syncUIHeights(){
     const uiH = (quickEl?.offsetHeight || 0) + (inpEl?.offsetHeight || 0);
-    dialog.style.setProperty('--uiH', (uiH + 4) + 'px'); // 少し余白+4px
+    dialog.style.setProperty('--uiH', (uiH + 4) + 'px');
   }
 
   // プリセット
@@ -113,7 +121,7 @@
     trend: '求職者は応募前にSNSで情報収集する時代。求職者の8割がSNSで気になる会社を検索し、職場の雰囲気や人間関係を確認してから応募するんだ。',
     challenge: 'よく相談される課題は 応募が来ない 時間がない 離職が多い。診療や訪問に追われ、採用に手が回らない経営者も多いんだ。',
     solution: 'HOAPは業界特化のノウハウで応募を集め、媒体運用 スカウト 面接日調整 採用広報のSNS運用など実務まで代行しているよ。経営者や事務スタッフはコア業務に専念できるんだ！',
-    feature: '特徴は3つ。1 欲しい人材像を明確化 2 媒体運用やスカウト送付を代行 3 毎月データ分析と改善提案',
+    feature: '特徴は3つ。1 欲しい人材像を明確化 2 媒体運用やスカウト送付を代行  3 毎月データ分析と改善提案',
     insta: 'Instagram運用支援では、差別化と共感される投稿を設計し、ファン化を狙うよ。写真提供とアンケート回答、投稿前チェックだけでOK！',
     cases: '事例1 兵庫の訪問看護で応募増。事例2 千葉の介護で応募2.5倍。事例3 東京の訪問看護で インスタ見て応募 の声。',
     price: '採用支援は月額10万円〜。Instagram運用は月額15万円。初期費用は各10万円。',
@@ -137,32 +145,32 @@
   // API
   async function ask(q){
     const res = await fetch(API, {
-      method: 'POST', mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: q })
+      method:'POST', mode:'cors',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ message:q })
     });
-    let data = null; try { data = await res.json(); } catch {}
-    if (!res.ok) throw new Error((data && (data.detail || data.error)) || (res.status + ' ' + res.statusText));
-    if (data && data.error) throw new Error(data.detail || data.error);
-    return (data && data.reply) || '';
+    let data=null; try{ data=await res.json(); }catch{}
+    if(!res.ok) throw new Error((data&&(data.detail||data.error))||(res.status+' '+res.statusText));
+    if(data&&data.error) throw new Error(data.detail||data.error);
+    return (data&&data.reply)||'';
   }
 
   // 送信
   async function handle(){
-    const t = ta.value.trim(); if (!t) return;
+    const t = ta.value.trim(); if(!t) return;
     userSay(t); ta.value = '';
-    try { botSay(await ask(t) || '（空の返答）'); afterBotReply(t); }
+    try{ botSay(await ask(t) || '（空の返答）'); afterBotReply(t); }
     catch(e){ botSay('エラー: ' + (e && e.message || e)); }
   }
 
   // CTA
   function afterBotReply(userText){
     const k = userText.toLowerCase();
-    const key = k.includes('料金') || k.includes('price') ? 'price'
-             : k.includes('導入') || k.includes('flow')  || k.includes('始め') ? 'flow'
-             : k.includes('事例') || k.includes('case')  ? 'cases'
-             : k.includes('インスタ') || k.includes('instagram') ? 'insta'
-             : k.includes('求人') || k.includes('採用') || k.includes('広報') ? 'feature'
+    const key = k.includes('料金')||k.includes('price') ? 'price'
+             : k.includes('導入')||k.includes('flow')||k.includes('始め') ? 'flow'
+             : k.includes('事例')||k.includes('case') ? 'cases'
+             : k.includes('インスタ')||k.includes('instagram') ? 'insta'
+             : k.includes('求人')||k.includes('採用')||k.includes('広報') ? 'feature'
              : 'about';
     dialog.__last = dialog.__last || '';
     dialog.__cnt  = dialog.__cnt  || 0;
@@ -187,12 +195,12 @@
       botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
       bodyEl.dataset.welcomed = '1';
     }
-    syncUIHeights(); // ← 開く度に反映
+    syncUIHeights();
     ta.focus();
   }
   function closeChat(){ dialog.classList.remove('open'); }
 
-  // 高さ変化の監視（レイアウト変動に追従）
+  // 高さ変化の監視
   const ro = new ResizeObserver(syncUIHeights);
   ro.observe(quickEl);
   ro.observe(inpEl);
