@@ -1,5 +1,3 @@
-もっと右、もっと下！
-
 // public/hoap-chat-embed.js
 (() => {
   const ORIGIN = 'https://hoap-ai-chatbot.vercel.app';
