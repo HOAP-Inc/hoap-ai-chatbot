@@ -79,10 +79,27 @@
       @media (prefers-reduced-motion:reduce){ .mascot img{ animation:none; } }
 
       @media (max-width:480px){
-        .chat{ right:0; bottom:0; width:100%; height:100vh; max-height:100vh; border-radius:0; }
-        .mascot{ right:8px; bottom:calc(8px + var(--uiH, 0px)); width:min(54%, 180px); }
-        .quick, .inp{ position:relative; z-index:3; }
-      }
+  /* チャット本体：7割サイズ・右下固定・角を丸く */
+  .chat{
+    right:8px;
+    bottom:8px;
+    width:70vw;          /* 幅を7割 */
+    height:70vh;         /* 高さも7割 */
+    max-width:none;
+    max-height:none;
+    border-radius:24px;  /* 角を丸く */
+  }
+
+  /* ほーぷちゃん：少し大きく、クイック＋入力の“上”に配置 */
+  .mascot{
+    right:8px;
+    bottom:calc(8px + var(--uiH, 0px));  /* 下部UIぶん持ち上げ */
+    width:min(66%, 220px);               /* “もうちょい”大きめ */
+  }
+
+  /* 念のため前面に（重なり見え対策のみ） */
+  .quick, .inp{ position:relative; z-index:3; }
+}
     </style>
 
     <button class='launcher' aria-label='チャットを開く'>💬</button>
