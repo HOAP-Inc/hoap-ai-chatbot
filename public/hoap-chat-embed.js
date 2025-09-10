@@ -14,30 +14,32 @@
   tpl.innerHTML = `
     <style>
       :host{ all:initial; --z:2147483000; --r:16px; --sh:0 8px 24px rgba(0,0,0,.18);
-             --bg:#fff; --g1:#f9a8d4; --g2:#d8b4fe; --g3:#c4b5fd; --uiH:0px; }
+             --bg:#fff; --g1:#f9a8d4; --g2:#d8b4fe; --g3:#c4b5fd; }
       *{ box-sizing:border-box; font:inherit; }
       .launcher{ position:fixed; right:20px; bottom:20px; z-index:var(--z);
         width:64px; height:64px; border-radius:999px; border:none; cursor:pointer;
         background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3));
         color:#fff; font-size:24px; display:grid; place-items:center; box-shadow:var(--sh); }
+
       .chat{ position:fixed; right:20px; bottom:20px; z-index:var(--z);
         width:320px; max-width:calc(100vw - 40px); background:var(--bg);
         border-radius:var(--r); box-shadow:var(--sh); border:1px solid #e5e7eb;
         display:none; flex-direction:column; overflow:hidden; height:72vh; max-height:80vh; isolation:isolate; }
       .open{ display:flex; }
+
       .hd{ padding:12px 14px; background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3));
            color:#fff; display:flex; align-items:center; gap:10px; }
       .ttl{ font-weight:700; font-size:14px; } .sub{ font-size:12px; opacity:.9; }
       .close{ margin-left:auto; background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer; }
 
-      /* ▼ ここがポイント：z-indexは“親のレイヤ”で勝負させる */
+      /* 本文エリア：背景はここ。子要素(メッセージ/マスコット)で前後を制御 */
       .body{
         padding:12px; overflow-y:auto; background:#fafafa;
-        position:relative;
-        z-index:2;          /* 本体をレイヤ2に */
-        flex:1; min-height:0;
+        position:relative; flex:1; min-height:0;
       }
-      .msg{ display:flex; gap:8px; margin-bottom:10px; position:relative; }
+
+      /* メッセージは z=2（＝マスコットの前） */
+      .msg{ display:flex; gap:8px; margin-bottom:10px; position:relative; z-index:2; }
       .bubble{ padding:10px 12px; border-radius:14px; max-width:80%; line-height:1.4; font-size:14px; }
       .bot .bubble{ background:#fff; border:1px solid #e5e7eb; }
       .user{ justify-content:flex-end; } .user .bubble{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; }
@@ -48,24 +50,20 @@
       .inp textarea{ flex:1; border:1px solid #e5e7eb; border-radius:10px; padding:10px; font-size:14px; resize:none; }
       .inp button{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; border:none; padding:0 14px; border-radius:10px; cursor:pointer; }
 
-      /* ほーぷちゃん：本体(body)より“下”、チャット枠より“上”のレイヤ1に固定 */
+      /* ほーぷちゃん：本文の“中”で右下固定。z=1（メッセージの後ろ） */
       .mascot{
-        position:absolute;
-        right:12px;
-        bottom: calc(12px + var(--uiH));
-        width:min(72%, 260px);        /* 少し大きく */
-        pointer-events:none;
-        z-index:1;                    /* body(2) <--- mascot(1) <--- chat(親) */
-        filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
-        opacity:.98;
-        transform:translateY(0);
+        position:absolute; right:12px; bottom:12px;
+        width:min(72%, 260px);           /* ちょい大きく */
+        pointer-events:none; z-index:1;  /* 背景 < マスコット < メッセージ */
+        filter:drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity:.98;
       }
       .mascot img{ display:block; width:100%; height:auto; animation:floaty 4.8s ease-in-out infinite; }
       @keyframes floaty{0%{transform:translateY(0) rotate(.4deg);}50%{transform:translateY(-8px) rotate(-.4deg);}100%{transform:translateY(0) rotate(.4deg);}}
       @media (prefers-reduced-motion:reduce){ .mascot img{ animation:none; } }
+
       @media (max-width:480px){
         .chat{ right:0; bottom:0; width:100%; height:100vh; max-height:100vh; border-radius:0; }
-        .mascot{ right:8px; width:min(54%, 180px); }   /* モバイルでも少し大きめ */
+        .mascot{ right:8px; bottom:8px; width:min(54%, 180px); }
       }
     </style>
 
@@ -77,15 +75,16 @@
         <button class='close' aria-label='閉じる'>×</button>
       </div>
 
-      <div class='body' id='body'></div>
+      <div class='body' id='body'>
+        <!-- ★ マスコットは本文(body)の中。背景より前／メッセージより後ろ -->
+        <div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
+      </div>
+
       <div class='quick' id='quick'></div>
-      <div class='inp' id='inp'>
+      <div class='inp'>
         <textarea id='ta' rows='2' placeholder='質問を入力して送信'></textarea>
         <button id='send'>送信</button>
       </div>
-
-      <!-- マスコットは .chat 直下（スクロール外） -->
-      <div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
     </div>
   `;
   shadow.appendChild(tpl.content.cloneNode(true));
@@ -97,15 +96,8 @@
   const closeBtn = $('.close');
   const bodyEl   = $('#body');
   const quickEl  = $('#quick');
-  const inpEl    = $('#inp');
   const ta       = $('#ta');
   const send     = $('#send');
-
-  // UI高さを反映（マスコットのbottom調整に使用）
-  function syncUIHeights(){
-    const uiH = (quickEl?.offsetHeight || 0) + (inpEl?.offsetHeight || 0);
-    dialog.style.setProperty('--uiH', (uiH + 4) + 'px');
-  }
 
   // プリセット
   const presets = [
@@ -195,16 +187,9 @@
       botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
       bodyEl.dataset.welcomed = '1';
     }
-    syncUIHeights();
     ta.focus();
   }
   function closeChat(){ dialog.classList.remove('open'); }
-
-  // 高さ変化の監視
-  const ro = new ResizeObserver(syncUIHeights);
-  ro.observe(quickEl);
-  ro.observe(inpEl);
-  window.addEventListener('resize', syncUIHeights);
 
   // ボタン
   launcher.addEventListener('click', openChat);
@@ -212,7 +197,8 @@
   closeBtn.addEventListener('click', closeChat);
 
   // プリセット
-  quickEl.addEventListener('click', e => {
+  const quick = $('#quick');
+  quick.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     const k = b.dataset.k;
     if (k === 'contact'){ window.location.href = 'https://hoap-inc.jp/contact'; return; }
@@ -220,7 +206,4 @@
     botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
     afterBotReply(b.textContent);
   });
-
-  // 初期反映
-  syncUIHeights();
 })();
