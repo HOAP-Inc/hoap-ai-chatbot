@@ -62,11 +62,11 @@
       /* ほーぷちゃん：本文の“中”で右下固定。z=1（メッセージの後ろ） */
       .mascot{
   position:absolute;
-  right:0;                              /* 右端 */
-  bottom:calc(var(--uiH, 0px));         /* クイック＋入力欄ぶん持ち上げる */
+  right:0;                               /* 右端ぴったり（これ以上右はありません） */
+  bottom:calc(2px + var(--uiH, 0px));    /* “さらに下”= 下部UIのすぐ上に2pxだけ余白 */
   width:300px;
   pointer-events:none;
-  z-index:1;                            /* メッセージより後ろ */
+  z-index:1;
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
   opacity:.98;
 }
