@@ -111,6 +111,9 @@
     line-height:1.1;
   }
 }
+
+/* 入力中「…」の見た目（薄く） */
+.msg.bot.typing .bubble{ opacity:.75; }
     </style>
 
     <button class='launcher' aria-label='チャットを開く'>💬</button>
@@ -185,6 +188,20 @@
   const userSay = t => addMsg('user', t);
   const botSay  = t => addMsg('bot',  t);
 
+  // 「…」のタイピング表示を出し、あとで消す関数を返す
+function showTyping(){
+  const row = document.createElement('div');
+  row.className = 'msg bot typing';
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.textContent = '…';  // 考え中の三点リーダ
+  row.appendChild(bub);
+  bodyEl.appendChild(row);
+  bodyEl.scrollTop = bodyEl.scrollHeight;
+  // 後で消すための関数を返す
+  return () => { row.remove(); };
+}
+
   // API
   async function ask(q){
     const res = await fetch(API, {
@@ -200,11 +217,22 @@
 
   // 送信
   async function handle(){
-    const t = ta.value.trim(); if(!t) return;
-    userSay(t); ta.value = '';
-    try{ botSay(await ask(t) || '（空の返答）'); afterBotReply(t); }
-    catch(e){ botSay('エラー: ' + (e && e.message || e)); }
+  const t = ta.value.trim(); if (!t) return;
+  userSay(t); ta.value = '';
+
+  // 考え中「…」を表示
+  const hideTyping = showTyping();
+
+  try{
+    const reply = await ask(t) || '（空の返答）';
+    hideTyping();         // 「…」を消す
+    botSay(reply);        // 本文を表示
+    afterBotReply(t);
+  }catch(e){
+    hideTyping();         // エラー時も必ず消す
+    botSay('エラー: ' + (e && e.message || e));
   }
+}
 
   // CTA
   function afterBotReply(userText){
