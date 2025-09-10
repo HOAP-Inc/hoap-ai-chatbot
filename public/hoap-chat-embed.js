@@ -45,7 +45,6 @@
     overflow-y:auto;
     background:#fafafa;
     position:relative;
-    z-index:2; /* ← メッセージ層（マスコットより前） */
     height:100%;
   }
       /* メッセージは z=2（＝マスコットの前） */
@@ -91,10 +90,9 @@
 
      <div class='body'>
   <div class='scroll' id='body'></div>
+  <!-- ★ .body の“中”に移動。スクロールの外、でも本文の中 -->
+  <div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
 </div>
-
-<!-- ★ マスコットは .chat 直下の兄弟要素（スクロールの外・z=1） -->
-<div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
 
 <div class='quick' id='quick'></div>
 <div class='inp'>
