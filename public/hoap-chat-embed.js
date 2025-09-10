@@ -32,12 +32,22 @@
       .ttl{ font-weight:700; font-size:14px; } .sub{ font-size:12px; opacity:.9; }
       .close{ margin-left:auto; background:transparent; color:#fff; border:none; font-size:18px; cursor:pointer; }
 
-      /* 本文エリア：背景はここ。子要素(メッセージ/マスコット)で前後を制御 */
-      .body{
-        padding:12px; overflow-y:auto; background:#fafafa;
-        position:relative; flex:1; min-height:0;
-      }
-
+      /* 本文ラッパー：スクロールは子の .scroll に持たせる */
+  .body{
+    position: relative;
+    flex: 1;
+    min-height: 0;
+  }
+  
+  /* 実際にスクロールする領域（背景色もこちらへ） */
+  .scroll{
+    padding:12px;
+    overflow-y:auto;
+    background:#fafafa;
+    position:relative;
+    z-index:2; /* ← メッセージ層（マスコットより前） */
+    height:100%;
+  }
       /* メッセージは z=2（＝マスコットの前） */
       .msg{ display:flex; gap:8px; margin-bottom:10px; position:relative; z-index:2; }
       .bubble{ padding:10px 12px; border-radius:14px; max-width:80%; line-height:1.4; font-size:14px; }
@@ -75,16 +85,18 @@
         <button class='close' aria-label='閉じる'>×</button>
       </div>
 
-      <div class='body' id='body'>
-        <!-- ★ マスコットは本文(body)の中。背景より前／メッセージより後ろ -->
-        <div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
-      </div>
+     <div class='body'>
+  <div class='scroll' id='body'></div>
+</div>
 
-      <div class='quick' id='quick'></div>
-      <div class='inp'>
-        <textarea id='ta' rows='2' placeholder='質問を入力して送信'></textarea>
-        <button id='send'>送信</button>
-      </div>
+<!-- ★ マスコットは .chat 直下の兄弟要素（スクロールの外・z=1） -->
+<div class='mascot' aria-hidden='true'><img src='${IMG}' alt='HOAP-chan'></div>
+
+<div class='quick' id='quick'></div>
+<div class='inp'>
+  <textarea id='ta' rows='2' placeholder='質問を入力して送信'></textarea>
+  <button id='send'>送信</button>
+</div>
     </div>
   `;
   shadow.appendChild(tpl.content.cloneNode(true));
