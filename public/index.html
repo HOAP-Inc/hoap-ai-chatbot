@@ -24,12 +24,31 @@
 }
 * { box-sizing: border-box; font: inherit; }
 
-.hoap-chat-launcher {
-  position: fixed; right: 20px; bottom: 80px !important; z-index: var(--z);
-  width: 64px; height: 64px; border-radius: 999px; border: none; cursor: pointer;
-  background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3));
-  color: #fff; font-size: 24px; display: grid; place-items: center;
-  box-shadow: var(--shadow);
+.hoap-chat-launcher{
+  position: fixed;
+  right: 20px;
+  bottom: 80px;              /* 位置はここで調整 */
+  z-index: var(--z);
+  width: 128px;              /* 画像サイズ */
+  height: auto;
+  background: transparent;   /* グラデ削除 */
+  border: none;
+  padding: 0;
+  display: block;
+  box-shadow: none;
+  cursor: pointer;
+}
+.hoap-chat-launcher img{
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  animation: floaty 4.8s ease-in-out infinite;  /* ふわふわ */
+}
+@media (max-width: 480px){
+  .hoap-chat-launcher{ right:12px; bottom:72px; width:100px; }
+}
+hadow: var(--shadow);
 }
 
 /* チャット全体：ちょい小さく＆高さは常に80vhで安定 */
@@ -100,7 +119,9 @@
 }
       </style>
 
-      <button class="hoap-chat-launcher" aria-label="チャットを開く">💬</button>
+      <button class='hoap-chat-launcher' aria-label='チャットを開く'>
+  <img src='/hoap-question.png' alt='HOAP-chan'>
+</button>
 
       <div class="hoap-chat" role="dialog" aria-label="HOAP サイトチャット">
         <div class="hoap-chat-header">
