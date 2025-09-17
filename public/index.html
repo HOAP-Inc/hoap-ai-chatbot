@@ -64,7 +64,7 @@ hadow: var(--shadow);
   max-height: 80vh;
 }
 
-.open { display: flex; }
+.hoap-chat.open { display: flex; }   /* チャットにだけ効かせる */
 
 .hoap-chat-header {
   padding: 12px 14px;
@@ -123,7 +123,7 @@ hadow: var(--shadow);
   <img src='/hoap-question.png' alt='HOAP-chan'>
 </button>
 
-      <div class="hoap-chat" role="dialog" aria-label="HOAP サイトチャット">
+      <div class="hoap-chat" role="dialog" aria-label="HOAP サイトチャット" style="display:none">
         <div class="hoap-chat-header">
           <div>
             <div class="title">HOAP-chan</div>
@@ -168,8 +168,10 @@ hadow: var(--shadow);
     const quickEl  = $('#quickArea');
     const launcher = shadow.querySelector('.hoap-chat-launcher');
     const dialog   = shadow.querySelector('.hoap-chat');
-    const closeBtn = shadow.querySelector('.hoap-chat-close');
+    dialog.classList.remove('open');
+    dialog.style.display = 'none';
 
+    const closeBtn = shadow.querySelector('.hoap-chat-close');
     function placeMascot() {
       const mascot = shadow.querySelector('.mascot');
       if (!mascot) return;
@@ -285,7 +287,8 @@ hadow: var(--shadow);
     });
 
     function openChat() {
-      dialog.classList.add('open');
+      dialog.style.display = '';      // inlineを解除
+      dialog.classList.add('open');   // CSSでdisplay:flexへ
       if (!bodyEl.dataset.welcomed) {
         botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
         bodyEl.dataset.welcomed = '1';
@@ -294,7 +297,10 @@ hadow: var(--shadow);
       syncMascotWithScroll();
       inputEl.focus();
     }
-    function closeChat() { dialog.classList.remove('open'); }
+    function closeChat() {
+      dialog.classList.remove('open');
+　    dialog.style.display = 'none'; // 確実に閉じる
+  }
 
     // 外のボタンは完全に削除
 const outerLauncher = document.querySelector('.hoap-chat-launcher');
