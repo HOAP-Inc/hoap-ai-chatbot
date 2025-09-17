@@ -16,10 +16,47 @@
       :host{ all:initial; --z:2147483000; --r:16px; --sh:0 8px 24px rgba(0,0,0,.18);
              --bg:#fff; --g1:#f9a8d4; --g2:#d8b4fe; --g3:#c4b5fd; }
       *{ box-sizing:border-box; font:inherit; }
-      .launcher{ position:fixed; right:20px; bottom:80px; z-index:var(--z);
-        width:64px; height:64px; border-radius:999px; border:none; cursor:pointer;
-        background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3));
-        color:#fff; font-size:24px; display:grid; place-items:center; box-shadow:var(--sh); }
+      /* 画像ランチャー（右下／サイズはお好みで） */
+.launcher{
+  position: fixed;
+  right: 20px;
+  bottom: 80px;          /* ← 位置はここで調整 */
+  z-index: var(--z);
+  width: 128px;          /* ← 画像の見せたい大きさ */
+  height: auto;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: none;
+  display: block;
+}
+.launcher img{
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;          /* クリックはbuttonに集約 */
+  animation: floaty 4.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ふわふわ上下 */
+@keyframes floaty{
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+/* アニメ苦手設定の尊重 */
+@media (prefers-reduced-motion: reduce){
+  .launcher img{ animation: none; }
+}
+
+/* スマホはちょい小さめ＋位置も詰める */
+@media (max-width: 480px){
+  .launcher{ right: 12px; bottom: 72px; width: 100px; }
+}
+
 
       .chat{ position:fixed; right:20px; bottom:20px; z-index:var(--z);
         width:320px; max-width:calc(100vw - 40px); background:var(--bg);
@@ -116,7 +153,10 @@
 .msg.bot.typing .bubble{ opacity:.75; }
     </style>
 
-    <button class='launcher' aria-label='チャットを開く'>💬</button>
+    <button class='launcher' aria-label='チャットを開く'>
+  <img src='${ORIGIN}/hoap-question.png' alt='HOAP-chan'>
+</button>
+
 
     <div class='chat' role='dialog' aria-label='HOAP サイトチャット'>
       <div class='hd'>
