@@ -102,7 +102,7 @@
   inset:auto;
   right:0;                               /* 右端ぴったり（これ以上右はありません） */
   bottom:calc(2px + var(--uiH, 0px));    /* “さらに下”= 下部UIのすぐ上に2pxだけ余白 */
-  width:300px;
+  width:200px;
   pointer-events:none;
   z-index:1;
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.22));
