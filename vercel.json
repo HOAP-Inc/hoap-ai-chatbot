@@ -11,6 +11,13 @@
       ]
     },
     {
+      "source": "/hoap-chat-embed.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://hoap-inc.jp https://www.hoap-inc.jp" }
