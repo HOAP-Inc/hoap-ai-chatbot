@@ -1,5 +1,7 @@
 // api/ask.js
 
+const { logConversation } = require('./sheets')
+
 // 許可オリジン判定
 function isAllowedOrigin(origin) {
   if (!origin) return false
@@ -58,10 +60,13 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'invalid_content_type' })
   }
 
-  const { message } = req.body || {}
+  const { message, session_id, turn, referrer, landing_page, origin, device } = req.body || {}
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'message is required' })
   }
+
+  // ログ用メタ情報を保持
+  const logMeta = { session_id, turn, referrer, landing_page, origin, device }
 
   // 1) ローカル判定
   const verdict = localGuard(message)
@@ -134,6 +139,19 @@ ${KNOWLEDGE}
 
     const data = await r.json()
     const reply = data.choices?.[0]?.message?.content ?? ''
+
+    // スプレッドシートにログ記録（非同期、エラーでも応答は返す）
+    logConversation({
+      timestamp: new Date().toISOString(),
+      session_id: logMeta.session_id,
+      turn: logMeta.turn,
+      user_message: message,
+      bot_reply: reply,
+      referrer: logMeta.referrer,
+      landing_page: logMeta.landing_page,
+      origin: logMeta.origin,
+      device: logMeta.device,
+    }).catch(e => console.warn('[log] failed:', e.message))
 
     return res.status(200).json({ reply })
   } catch (e) {
