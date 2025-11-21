@@ -208,6 +208,13 @@
 
   // 要素
   const $        = s => shadow.querySelector(s);
+
+  // ===== ログ用メタ情報 =====
+  const SESSION_ID = 'ses_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  let turnCount = 0;
+  const LANDING_PAGE = window.location.href;
+  const REFERRER = document.referrer || '';
+  const DEVICE = /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'PC';
   const dialog   = $('.chat');
   const launcher = $('.launcher');
   const closeBtn = $('.close');
@@ -296,10 +303,20 @@ function showTyping(){
 
   // API
   async function ask(q){
+    turnCount++;
     const res = await fetch(API, {
       method:'POST', mode:'cors',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ message:q })
+      body: JSON.stringify({
+        message: q,
+        // ログ用メタ情報
+        session_id: SESSION_ID,
+        turn: turnCount,
+        referrer: REFERRER,
+        landing_page: LANDING_PAGE,
+        origin: window.location.origin,
+        device: DEVICE,
+      })
     });
     let data=null; try{ data=await res.json(); }catch{}
     if(!res.ok) throw new Error((data&&(data.detail||data.error))||(res.status+' '+res.statusText));
