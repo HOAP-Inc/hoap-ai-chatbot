@@ -29,7 +29,7 @@
   right: 20px;
   bottom: 80px;              /* 位置はここで調整 */
   z-index: var(--z);
-  width: 128px;              /* 画像サイズ */
+  width: 150px;              /* 128px -> 150px (大きく) */
   height: auto;
   background: transparent;   /* グラデ削除 */
   border: none;
@@ -38,15 +38,22 @@
   box-shadow: none;
   cursor: pointer;
 }
-.hoap-chat-launcher img{
+.hoap-chat-launcher img.mascot-img{
   display: block;
   width: 100%;
   height: auto;
   pointer-events: none;
   animation: floaty 4.8s ease-in-out infinite;  /* ふわふわ */
 }
+.hoap-chat-launcher img.quest-img{
+  position: absolute;
+  top: -40px; right: 0; /* 頭上に配置 */
+  width: 60px; height: auto; /* サイズを調整 */
+  pointer-events: none;
+  animation: floaty 4.8s ease-in-out infinite; 
+}
 @media (max-width: 480px){
-  .hoap-chat-launcher{ right:12px; bottom:72px; width:100px; }
+  .hoap-chat-launcher{ right:12px; bottom:72px; width:110px; }
 }
 
 /* チャット全体：ちょい小さく＆高さは常に80vhで安定 */
@@ -162,7 +169,8 @@
       </style>
 
       <button class='hoap-chat-launcher' aria-label='チャットを開く'>
-  <img src='/hoap-question.png' alt='HOAP-chan'>
+  <img src='/hoap-question.png' alt='HOAP-chan' class='mascot-img'>
+  <img src='/question.png' alt='?' class='quest-img'>
 </button>
 
       <div class="hoap-chat" role="dialog" aria-label="HOAP サイトチャット" style="display:none">

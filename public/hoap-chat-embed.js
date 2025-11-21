@@ -3,6 +3,7 @@
   const ORIGIN = 'https://hoap-ai-chatbot.vercel.app';
   const API    = ORIGIN + '/api/ask';
   const IMG    = ORIGIN + '/hoap-basic.png';
+  const QIMG   = ORIGIN + '/question.png'; // 追加
 
   // Shadow DOM
   const mount  = document.createElement('div');
@@ -22,7 +23,7 @@
   right: 20px;
   bottom: 80px;          /* ← 位置はここで調整 */
   z-index: var(--z);
-  width: 128px;          /* ← 画像の見せたい大きさ */
+  width: 150px;          /* ← 128->150 画像の見せたい大きさ */
   height: auto;
   background: transparent;
   border: none;
@@ -31,13 +32,20 @@
   box-shadow: none;
   display: block;
 }
-.launcher img{
+.launcher img.base{
   display: block;
   width: 100%;
   height: auto;
-  pointer-events: none;          /* クリックはbuttonに集約 */
+  pointer-events: none;
   animation: floaty 4.8s ease-in-out infinite;
   will-change: transform;
+}
+.launcher img.over{
+  position: absolute;
+  top: -40px; right: 0;
+  width: 60px; height: auto;
+  pointer-events: none;
+  animation: floaty 4.8s ease-in-out infinite;
 }
 
 /* ふわふわ上下 */
@@ -49,12 +57,12 @@
 
 /* アニメ苦手設定の尊重 */
 @media (prefers-reduced-motion: reduce){
-  .launcher img{ animation: none; }
+  .launcher img.base, .launcher img.over{ animation: none; }
 }
 
 /* スマホはちょい小さめ＋位置も詰める */
 @media (max-width: 480px){
-  .launcher{ right: 12px; bottom: 72px; width: 100px; }
+  .launcher{ right: 12px; bottom: 72px; width: 110px; }
 }
 
 
@@ -175,7 +183,8 @@
     </style>
 
     <button class='launcher' aria-label='チャットを開く'>
-  <img src='${ORIGIN}/hoap-question.png' alt='HOAP-chan'>
+  <img src='${ORIGIN}/hoap-question.png' alt='HOAP-chan' class='base'>
+  <img src='${QIMG}' alt='?' class='over'>
 </button>
 
 
