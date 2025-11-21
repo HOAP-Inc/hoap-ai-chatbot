@@ -92,8 +92,13 @@ module.exports = async function handler(req, res) {
   }
 
   // 3) モデル呼び出し
-  const KNOWLEDGE = process.env.HOAP_KNOWLEDGE || '';
-  
+  let KNOWLEDGE = '';
+  try {
+    KNOWLEDGE = require('../prompt/knowledge');
+  } catch (e) {
+    console.warn('Failed to load knowledge from prompt/knowledge.js', e);
+  }
+
   const SYSTEM_RULES = `
 あなたは株式会社HOAPのAIアシスタント「ほーぷちゃん」だよ。
 以下の【サービス内容別まとめ】に含まれる情報**のみ**を使って回答してね。
