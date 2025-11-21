@@ -301,6 +301,28 @@ function showTyping(){
   return () => { row.remove(); };
 }
 
+  // ログ専用API（定型回答用）
+  const LOG_API = ORIGIN + '/api/log';
+  async function logOnly(userMsg, botReply){
+    turnCount++;
+    try {
+      await fetch(LOG_API, {
+        method:'POST', mode:'cors',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          session_id: SESSION_ID,
+          turn: turnCount,
+          user_message: userMsg,
+          bot_reply: botReply,
+          referrer: REFERRER,
+          landing_page: LANDING_PAGE,
+          origin: window.location.origin,
+          device: DEVICE,
+        })
+      });
+    } catch(e) { /* ignore */ }
+  }
+
   // API
   async function ask(q){
     turnCount++;
@@ -423,23 +445,32 @@ async function splitAndShow(text, appendHtml = '') {
     const b = e.target.closest('button'); if (!b) return;
     const k = b.dataset.k;
     if (k === 'contact'){ window.location.href = 'https://hoap-inc.jp/contact'; return; }
-    userSay(b.textContent);
+    const userText = b.textContent;
+    userSay(userText);
+    let botReply = '';
     if (k === 'cases') {
-      botSay('こちらから確認してね！<br><button class="choice-btn" data-link="https://hoap-inc.jp/case">導入事例紹介</button>', true);
+      botReply = 'こちらから確認してね！';
+      botSay(botReply + '<br><button class="choice-btn" data-link="https://hoap-inc.jp/case">導入事例紹介</button>', true);
     } else if (k === 'price') {
-      botSay('どちらの料金について知りたい？<br>' +
+      botReply = 'どちらの料金について知りたい？';
+      botSay(botReply + '<br>' +
         '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
         '<button class="choice-btn" data-next="price_insta">採用広報支援</button>', true);
     } else if (k === 'about') {
-      botSay('どちらのサービスについて知りたい？<br>' +
+      botReply = 'どちらのサービスについて知りたい？';
+      botSay(botReply + '<br>' +
         '<button class="choice-btn" data-ask="採用支援について詳しく教えて">採用支援</button>' +
         '<button class="choice-btn" data-ask="採用広報支援について詳しく教えて">採用広報支援</button>', true);
     } else if (k === 'other') {
-      botSay('サービスについて気になっていることを何でも聞いてね。');
+      botReply = 'サービスについて気になっていることを何でも聞いてね。';
+      botSay(botReply);
     } else {
-      botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
+      botReply = KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。';
+      botSay(botReply);
     }
-    afterBotReply(b.textContent);
+    // 定型回答をログに記録
+    logOnly(userText, botReply);
+    afterBotReply(userText);
   });
 
   // メッセージ内ボタン
@@ -477,9 +508,13 @@ async function splitAndShow(text, appendHtml = '') {
     }
 
     if (next && KB[next]) {
-      userSay(btn.textContent);
-      botSay(KB[next], true);
-      afterBotReply(btn.textContent);
+      const userText = btn.textContent;
+      const botReply = KB[next];
+      userSay(userText);
+      botSay(botReply, true);
+      // 定型回答をログに記録
+      logOnly(userText, botReply.replace(/<[^>]*>/g, '')); // HTMLタグを除去
+      afterBotReply(userText);
     }
   });
   // 下部UIの高さを監視して反映
