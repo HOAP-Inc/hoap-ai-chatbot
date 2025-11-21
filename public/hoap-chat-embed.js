@@ -288,11 +288,38 @@ function showTyping(){
   try{
     const reply = await ask(t) || '（空の返答）';
     hideTyping();         // 「…」を消す
-    botSay(reply);        // 本文を表示
+    await splitAndShow(reply);
     afterBotReply(t);
   }catch(e){
     hideTyping();         // エラー時も必ず消す
     botSay('エラー: ' + (e && e.message || e));
+  }
+}
+
+async function splitAndShow(text) {
+  const MAX_LEN = 225;
+  const lines = text.split('\n');
+  const chunks = [];
+  let current = '';
+
+  for (const line of lines) {
+    if ((current + line).length > MAX_LEN) {
+      if (current) chunks.push(current);
+      current = line + '\n';
+    } else {
+      current += line + '\n';
+    }
+  }
+  if (current) chunks.push(current);
+
+  let lastMsg = null;
+  for (let i = 0; i < chunks.length; i++) {
+    if (i > 0) {
+      await new Promise(r => setTimeout(r, 3000));
+      if (lastMsg) lastMsg.remove();
+    }
+    botSay(chunks[i].trim());
+    lastMsg = bodyEl.lastElementChild; 
   }
 }
 
@@ -379,7 +406,7 @@ function showTyping(){
       try {
         const reply = await ask(askText);
         hide();
-        botSay(reply);
+        await splitAndShow(reply);
         afterBotReply(btn.textContent);
       } catch(err) {
         hide();

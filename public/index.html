@@ -297,7 +297,7 @@
            const tempEl = shadow.getElementById(tempId);
            if (tempEl) tempEl.closest('.msg').remove(); // ローディング消す
            
-           botSay(reply);
+           await splitAndShow(reply);
            afterBotReply(btn.textContent);
         } catch(err) {
            botSay('ごめんね、エラーが出ちゃった。');
@@ -355,10 +355,43 @@
       setTimeout(() => { inputEl.value = ''; inputEl.focus(); }, 0);
       try {
         const a = await ask(text);
-        botSay(a || '（空の返答）');
+        if (a) {
+          await splitAndShow(a);
+        } else {
+          botSay('（空の返答）');
+        }
         afterBotReply(text);
       } catch (e) {
         botSay('エラー: ' + (e && e.message ? e.message : e));
+      }
+    }
+
+    async function splitAndShow(text) {
+      const MAX_LEN = 225;
+      const lines = text.split('\n');
+      const chunks = [];
+      let current = '';
+
+      for (const line of lines) {
+        // 非常に長い1行が225文字を超える場合も考慮すべきだが、今回は改行区切り前提
+        // もしcurrent単体ですでにMAXを超えている場合などは強制分割が必要だが簡易実装とする
+        if ((current + line).length > MAX_LEN) {
+          if (current) chunks.push(current);
+          current = line + '\n';
+        } else {
+          current += line + '\n';
+        }
+      }
+      if (current) chunks.push(current);
+
+      let lastMsg = null;
+      for (let i = 0; i < chunks.length; i++) {
+        if (i > 0) {
+          await new Promise(r => setTimeout(r, 3000));
+          if (lastMsg) lastMsg.remove();
+        }
+        botSay(chunks[i].trim());
+        lastMsg = bodyEl.lastElementChild; 
       }
     }
 
