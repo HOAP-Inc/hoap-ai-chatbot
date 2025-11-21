@@ -94,15 +94,23 @@
 
       /* 選択肢ボタン */
       .choice-btn{
-        display:inline-block; margin:4px 2px; padding:6px 12px;
-        background:#fff; color:#333;
+        display:block; width:90%; max-width:280px; margin:6px auto;
+        padding:8px 12px; background:#fff; color:#333;
         border:2px solid #8b5cf6; border-radius:999px;
-        font-size:13px; cursor:pointer; transition:background .2s;
+        font-size:13px; text-align:center; cursor:pointer; transition:background .2s;
       }
       .choice-btn:hover{ background:#f5f3ff; }
 
-      .quick{ display:flex; flex-wrap:wrap; gap:8px; padding:10px 12px; border-top:1px solid #e5e7eb; background:#fff; }
-      .quick button{ border:1px solid #e5e7eb; background:#fff; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }
+      .quick{
+        display:grid; grid-template-columns:repeat(3, 1fr); /* 3列 */
+        gap:8px; padding:10px 12px;
+        border-top:1px solid #e5e7eb; background:#fff;
+      }
+      .quick button{
+        border:1px solid #e5e7eb; background:#fff; border-radius:999px;
+        padding:8px 4px; font-size:11px; cursor:pointer;
+        width:100%; display:flex; justify-content:center; align-items:center;
+      }
       .inp{ display:flex; gap:8px; padding:10px; border-top:1px solid #e5e7eb; background:#fff; }
       .inp textarea{ flex:1; border:1px solid #e5e7eb; border-radius:10px; padding:10px; font-size:14px; resize:none; }
       .inp button{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; border:none; padding:0 14px; border-radius:10px; cursor:pointer; }
@@ -131,11 +139,11 @@
   .chat{
     right:8px;
     bottom:8px;
-    width:70vw;          /* 幅を7割 */
-    height:70vh;         /* 高さも7割 */
+    width:85vw;          /* 幅を85%に広げる（ボタン3列確保のため） */
+    height:70vh;
     max-width:none;
     max-height:none;
-    border-radius:24px;  /* 角を丸く */
+    border-radius:24px;
   }
 
   /* ほーぷちゃん：少し大きく、クイック＋入力の“上”に配置 */
@@ -149,14 +157,16 @@
   .quick, .inp{ position:relative; z-index:3; }
   
   .quick{
-    padding:6px 8px;   /* 10px→小さめ */
-    gap:6px;           /* 8px→6px */
+    padding:6px 8px;
+    gap:6px;
+    /* grid継承 */
   }
   .quick button{
-    padding:4px 8px;   /* 6px 10px→小さめ */
-    font-size:11px;    /* 12px→11px */
+    padding:4px 2px;
+    font-size:10px;    /* さらに小さく */
     border-radius:999px;
     line-height:1.1;
+    width:100%;
   }
 }
 
