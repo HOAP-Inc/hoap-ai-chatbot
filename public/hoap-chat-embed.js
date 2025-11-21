@@ -144,15 +144,12 @@
       @media (prefers-reduced-motion:reduce){ .mascot img{ animation:none; } }
 
       @media (max-width:480px){
-  /* チャット本体：7割サイズ・右下固定・角を丸く */
+  /* チャット本体：スマホは全画面 */
   .chat{
-    right:8px;
-    bottom:8px;
-    width:85vw;          /* 幅を85%に広げる（ボタン3列確保のため） */
-    height:70dvh;        /* 70vh -> 70dvh */
-    max-width:none;
-    max-height:none;
-    border-radius:24px;
+    position: fixed; inset: 0; /* 上下左右0 */
+    width: 100%; height: 100dvh;
+    max-width: none; max-height: none;
+    border-radius: 0;
   }
   .inp textarea{ font-size:16px; } /* ズーム防止 */
 
