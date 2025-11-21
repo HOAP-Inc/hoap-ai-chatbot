@@ -60,7 +60,7 @@ async function getAccessToken(email, privateKey) {
 
 // スプレッドシートに行を追加
 async function appendRow(sheetId, values, accessToken) {
-  const range = 'Sheet1!A:I' // A〜I列（9カラム）
+  const range = 'A:I' // シート名省略で最初のシートに追加（日本語環境対応）
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`
 
   const res = await fetch(url, {
