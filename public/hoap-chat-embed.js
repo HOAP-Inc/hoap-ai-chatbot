@@ -319,8 +319,8 @@ async function splitAndShow(text, appendHtml = '') {
   let lastMsg = null;
   for (let i = 0; i < chunks.length; i++) {
     if (i > 0) {
-      await new Promise(r => setTimeout(r, 3000));
-      if (lastMsg) lastMsg.remove();
+      await new Promise(r => setTimeout(r, 5000));
+      // if (lastMsg) lastMsg.remove();
     }
     botSay(chunks[i].trim(), true);
     lastMsg = bodyEl.lastElementChild; 

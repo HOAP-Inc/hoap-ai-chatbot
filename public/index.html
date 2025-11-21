@@ -395,8 +395,9 @@
       let lastMsg = null;
       for (let i = 0; i < chunks.length; i++) {
         if (i > 0) {
-          await new Promise(r => setTimeout(r, 3000));
-          if (lastMsg) lastMsg.remove();
+          await new Promise(r => setTimeout(r, 5000));
+          // 前のメッセージを消さずに残す
+          // if (lastMsg) lastMsg.remove(); 
         }
         // ボタンが含まれる可能性があるため HTMLモード(true) で表示
         botSay(chunks[i].trim(), true);
