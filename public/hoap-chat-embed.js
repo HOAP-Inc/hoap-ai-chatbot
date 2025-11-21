@@ -339,7 +339,7 @@ async function splitAndShow(text, appendHtml = '') {
     dialog.__last = dialog.__last || '';
     dialog.__cnt  = dialog.__cnt  || 0;
     if (dialog.__last === key) dialog.__cnt++; else { dialog.__last = key; dialog.__cnt = 1; }
-    if (dialog.__cnt >= 2){ botSay('よかったらHOAPに相談してみない？問い合わせフォームを押してね！'); dialog.__cnt = 0; }
+    if (dialog.__cnt >= 2){ botSay('よかったらHOAPに相談してみない？「問い合わせ」ボタンを押してみてね！'); dialog.__cnt = 0; }
   }
 
   // 入力系
