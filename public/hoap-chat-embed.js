@@ -216,7 +216,7 @@
     about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
     cases: '事例1 兵庫の訪問看護で応募増。事例2 千葉の介護で応募2.5倍。事例3 東京の訪問看護で インスタ見て応募 の声。',
     price: '採用支援は月額10万円〜。Instagram運用は月額15万円。初期費用は各10万円。',
-    price_recruit: '採用支援は月額10万円〜（求人数・期間により変動）。初期費用は10万円だよ！',
+    price_recruit: '採用支援サービスは月額110,000円（税込）から導入可能だよ！<br>現在の課題感や採用計画に合わせて柔軟に対応できるから、よかったらまずは相談してみてね。<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>',
     price_insta: 'Instagram運用支援は月額15万円。初期費用は10万円だよ！',
     flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！',
     other: 'その他のご質問については、お気軽に問い合わせフォームからご連絡ください。詳しくお答えしますね！'
@@ -352,9 +352,15 @@ function showTyping(){
     const btn = e.target.closest('.choice-btn');
     if (!btn) return;
     const next = btn.dataset.next;
+    
+    if (next === 'contact_direct') {
+      window.location.href = 'https://hoap-inc.jp/contact';
+      return;
+    }
+
     if (next && KB[next]) {
       userSay(btn.textContent);
-      botSay(KB[next]);
+      botSay(KB[next], true);
       afterBotReply(btn.textContent);
     }
   });
