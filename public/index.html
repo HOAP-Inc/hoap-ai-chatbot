@@ -369,11 +369,29 @@
 
     const API_ORIGIN = 'https://hoap-ai-chatbot.vercel.app';
 
+    // ===== ログ用メタ情報 =====
+    // session_id: ページロード時に生成（タブを閉じるまで同じ）
+    const SESSION_ID = 'ses_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    let turnCount = 0;
+    const LANDING_PAGE = window.location.href;
+    const REFERRER = document.referrer || '';
+    const DEVICE = /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'PC';
+
     async function ask(question) {
+      turnCount++;
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: question }),
+        body: JSON.stringify({
+          message: question,
+          // ログ用メタ情報
+          session_id: SESSION_ID,
+          turn: turnCount,
+          referrer: REFERRER,
+          landing_page: LANDING_PAGE,
+          origin: window.location.origin,
+          device: DEVICE,
+        }),
       });
       let data = null;
       try { data = await res.json(); } catch {}
