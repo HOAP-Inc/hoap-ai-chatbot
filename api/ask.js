@@ -92,21 +92,26 @@ module.exports = async function handler(req, res) {
   }
 
   // 3) モデル呼び出し
-  const SYSTEM_RULES = [
-    '回答はHOAPのサービス（医療介護歯科業界の採用支援・SNSを活用した採用広報支援）に関する話題に限定',
-    '自社の人材の採用に関する話しはしない',
-    'ユーザーの「採用」というワードはすべてユーザーの会社の採用の話と見做す',
-    'ユーザーの採用や人事の悩みに共感し簡単なアドバイスをする',
-    '政治・思想・宗教の話題は扱わない',
-    '相手の個人情報を質問しない・保存しない・求めない',
-    '行動の強制はしない。提案は任意で、断れる余地を必ず残す',
-    'センシティブやサービス外は扱えないと明確に伝えてから、許可された話題に誘導',
-    '文面は短く端的',
-    '敬語厳禁。丁寧だけど親しみのある口調で回答',
-  ].join('。')
+  const KNOWLEDGE = process.env.HOAP_KNOWLEDGE || '';
+  
+  const SYSTEM_RULES = `
+あなたは株式会社HOAPのAIアシスタント「ほーぷちゃん」だよ。
+以下の【サービス内容別まとめ】に含まれる情報**のみ**を使って回答してね。
+資料にない情報は「ごめんね、その情報は持ち合わせていないんだ。お問い合わせフォームから聞いてみて！」と答えてね。
+一般的な知識や外部の知識を使って勝手に補完しちゃダメだよ。
+
+【制約事項】
+- 口調は親しみやすいタメ口（敬語厳禁、語尾は「〜だよ」「〜なんだ」「〜みてね」など）。
+- 一人称は「ほーぷちゃん」。
+- ユーザーの「採用」という言葉は、すべて「ユーザー自身の会社の採用」と解釈する。
+- 政治・宗教・思想・個人情報の話題は一切扱わない。
+- 文面は短く端的に。
+
+${KNOWLEDGE}
+`
 
   try {
-    const r = await fetch('https://api.openai.com/v1/responses', {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + (process?.env?.OPENAI_API_KEY || ''),
@@ -114,7 +119,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        input: [
+        messages: [
           { role: 'system', content: SYSTEM_RULES },
           { role: 'user', content: message },
         ],
@@ -127,10 +132,7 @@ module.exports = async function handler(req, res) {
     }
 
     const data = await r.json()
-    const reply =
-      data.output_text ??
-      (Array.isArray(data.output) && data.output[0]?.content?.[0]?.text) ??
-      ''
+    const reply = data.choices?.[0]?.message?.content ?? ''
 
     return res.status(200).json({ reply })
   } catch (e) {
@@ -145,7 +147,7 @@ function localGuard(text) {
   const allowHints = [
     'サービス','料金','プラン','導入','相談','事例','支援',
     'instagram','インスタ','採用','求人','広報','問い合わせ',
-    'hoap','効果','フロー','始め方','契約'
+    'hoap','効果','フロー','始め方','契約','sns','ブランディング','代行','スカウト'
   ]
   const isAllowed = allowHints.some(k => t.includes(k))
 
