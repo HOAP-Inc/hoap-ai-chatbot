@@ -228,8 +228,7 @@
     price: '採用支援は月額10万円〜。Instagram運用は月額15万円。初期費用は各10万円。',
     price_recruit: '採用支援サービスは月額110,000円（税込）から導入可能だよ！<br>現在の課題感や採用計画に合わせて柔軟に対応できるから、よかったらまずは相談してみてね。<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>',
     price_insta: '採用支援サービスは月額165,000円（税込）で導入可能だよ！<br>現在の課題感や採用計画に合わせて柔軟に対応できるから、よかったらまずは相談してみてね。<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>',
-    flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！',
-    other: 'その他のご質問については、お気軽に問い合わせフォームからご連絡ください。詳しくお答えしますね！'
+    flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！'
   };
 
   // 吹き出し
@@ -297,7 +296,7 @@ function showTyping(){
 }
 
 async function splitAndShow(text, appendHtml = '') {
-  const MAX_LEN = 225;
+  const MAX_LEN = 250;
   const lines = text.split('\n');
   const chunks = [];
   let current = '';
@@ -387,6 +386,8 @@ async function splitAndShow(text, appendHtml = '') {
       botSay('どちらのサービスについて知りたい？<br>' +
         '<button class="choice-btn" data-ask="採用支援について詳しく教えて">採用支援</button>' +
         '<button class="choice-btn" data-ask="採用広報支援について詳しく教えて">採用広報支援</button>', true);
+    } else if (k === 'other') {
+      botSay('サービスについて気になっていることを何でも聞いてね。');
     } else {
       botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
     }

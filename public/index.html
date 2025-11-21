@@ -230,7 +230,6 @@
       price_insta: '採用支援サービスは月額165,000円（税込）で導入可能だよ！<br>現在の課題感や採用計画に合わせて柔軟に対応できるから、よかったらまずは相談してみてね。<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>',
       contact_direct: 'contact',  /* 特別なキーとして扱う */
       flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能だよ！',
-      other: 'その他のご質問については、お気軽に問い合わせフォームからご連絡ください。詳しくお答えしますね！',
     };
 
     function addMsg(side, text, isHtml = false) {
@@ -266,6 +265,8 @@
         botSay('どちらのサービスについて知りたい？<br>' +
           '<button class="choice-btn" data-ask="採用支援について詳しく教えて">採用支援</button>' +
           '<button class="choice-btn" data-ask="採用広報支援について詳しく教えて">採用広報支援</button>', true);
+      } else if (intent === 'other') {
+        botSay('サービスについて気になっていることを何でも聞いてね。');
       } else {
         botSay(KB[intent] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
       }
@@ -370,7 +371,7 @@
     }
 
     async function splitAndShow(text, appendHtml = '') {
-      const MAX_LEN = 225;
+      const MAX_LEN = 250;
       const lines = text.split('\n');
       const chunks = [];
       let current = '';
