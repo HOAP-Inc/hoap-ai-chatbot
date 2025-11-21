@@ -83,7 +83,7 @@
 .msg { display: flex; gap: 8px; margin-bottom: 10px; position: relative; z-index: 2; }
 .user { justify-content: flex-end; }
 .bubble { padding: 10px 12px; border-radius: 14px; max-width: 80%; line-height: 1.4; font-size: 14px; }
-.bot .bubble { background: #fff; border: 1px solid #e5e7eb; }
+.bot .bubble { background: #fff; border: 1px solid #e5e7eb; max-width: 65%; } /* ほーぷちゃんが見えるよう幅を狭める */
 .user .bubble { background: linear-gradient(135deg, var(--grad1), var(--grad2), var(--grad3)); color: #fff; }
 .bubble a { color: #6366f1; text-decoration: underline; }
 .bubble a:hover { color: #4f46e5; }
@@ -113,7 +113,7 @@
 
 /* ほーぷちゃん：PCは控えめ／右下固定 */
 .mascot{
-  position: absolute; right: 12px; bottom: 12px;
+  position: absolute; right: 0; bottom: 12px; /* 右端に寄せる */
   width: min(41%, 147px);
   pointer-events: none; z-index: 1;
   filter: drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity: .98;
