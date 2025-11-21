@@ -113,7 +113,8 @@
 
 /* ほーぷちゃん：PCは控えめ／右下固定 */
 .mascot{
-  position: absolute; right: -16px; bottom: 70px; /* 入力欄の上あたり */
+  position: absolute; right: -16px;
+  bottom: calc(12px + var(--uiH, 130px)); /* ボタン類の上へ */
   width: min(41%, 147px);
   pointer-events: none; z-index: 1;
   filter: drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity: .98;
@@ -130,7 +131,8 @@
       height: 100vh; max-height: 100vh; border-radius: 0;
     }
     .mascot{
-      right: -8px; bottom: 70px; /* スマホも位置調整 */
+      right: -8px;
+      bottom: calc(12px + var(--uiH, 130px)); /* スマホも同様 */
       width: min(45%, 140px);
     }
   }
@@ -352,10 +354,20 @@ if (outerLauncher) outerLauncher.remove(); // display:noneじゃなくて削除�
 
 // Shadow内のボタンにイベント
 const innerLauncher = shadow.querySelector('.hoap-chat-launcher');
-innerLauncher.addEventListener('click', openChat);
-innerLauncher.addEventListener('touchend', openChat); // タッチイベントも追加
+    innerLauncher.addEventListener('click', openChat);
+    innerLauncher.addEventListener('touchend', openChat); // タッチイベントも追加
     closeBtn.addEventListener('click', closeChat);
     window.addEventListener('resize', placeMascot);
     bodyEl.addEventListener('scroll', syncMascotWithScroll);
+
+    // UI高さ監視
+    function syncMascotPos() {
+      const h = (quickEl.offsetHeight || 0) + (inputEl.offsetHeight || 0);
+      dialog.style.setProperty('--uiH', h + 'px');
+    }
+    const ro = new ResizeObserver(syncMascotPos);
+    ro.observe(quickEl);
+    ro.observe(inputEl);
+    syncMascotPos(); // 初期実行
   </script>
 </body>
