@@ -89,6 +89,8 @@
       .bubble{ padding:10px 12px; border-radius:14px; max-width:80%; line-height:1.4; font-size:14px; }
       .bot .bubble{ background:#fff; border:1px solid #e5e7eb; }
       .user{ justify-content:flex-end; } .user .bubble{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; }
+      .bubble a{ color:#6366f1; text-decoration:underline; }
+      .bubble a:hover{ color:#4f46e5; }
 
       .quick{ display:flex; flex-wrap:wrap; gap:8px; padding:10px 12px; border-top:1px solid #e5e7eb; background:#fff; }
       .quick button{ border:1px solid #e5e7eb; background:#fff; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }
@@ -210,18 +212,22 @@
   };
 
   // 吹き出し
-  function addMsg(side, text){
+  function addMsg(side, text, isHtml = false){
     const row = document.createElement('div');
     row.className = 'msg ' + side;
     const bub = document.createElement('div');
     bub.className = 'bubble';
-    bub.textContent = text;
+    if (isHtml) {
+      bub.innerHTML = text;
+    } else {
+      bub.textContent = text;
+    }
     row.appendChild(bub);
     bodyEl.appendChild(row);
     bodyEl.scrollTop = bodyEl.scrollHeight;
   }
   const userSay = t => addMsg('user', t);
-  const botSay  = t => addMsg('bot',  t);
+  const botSay  = (t, isHtml = false) => addMsg('bot', t, isHtml);
 
   // 「…」のタイピング表示を出し、あとで消す関数を返す
 function showTyping(){
@@ -318,7 +324,11 @@ function showTyping(){
     const k = b.dataset.k;
     if (k === 'contact'){ window.location.href = 'https://hoap-inc.jp/contact'; return; }
     userSay(b.textContent);
-    botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
+    if (k === 'cases') {
+      botSay('こちらから確認してね！<br><a href="https://hoap-inc.jp/case" target="_blank" rel="noopener noreferrer">導入事例紹介</a>', true);
+    } else {
+      botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
+    }
     afterBotReply(b.textContent);
   });
   // 下部UIの高さを監視して反映
