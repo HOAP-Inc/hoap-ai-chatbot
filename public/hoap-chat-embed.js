@@ -111,8 +111,8 @@
       .mascot{
   position:absolute;
   inset:auto;
-  right:0;                               /* 右端ぴったり（これ以上右はありません） */
-  bottom:calc(2px + var(--uiH, 0px));    /* “さらに下”= 下部UIのすぐ上に2pxだけ余白 */
+  right:-16px;                           /* もっと右へ */
+  bottom:calc(4px + var(--inpH, 55px));  /* 入力欄の高さ分だけ浮かせる（クイックエリアには被る） */
   width:200px;
   pointer-events:none;
   z-index:1;
@@ -140,9 +140,9 @@
 
   /* ほーぷちゃん：少し大きく、クイック＋入力の“上”に配置 */
   .mascot{
-    right:8px;
-    bottom:calc(8px + var(--uiH, 0px));  /* 下部UIぶん持ち上げ */
-    width:min(66%, 220px);               /* “もうちょい”大きめ */
+    right:-8px;
+    bottom:calc(8px + var(--inpH, 55px)); /* スマホも同様に入力欄の上 */
+    width:min(66%, 220px);
   }
 
   /* 念のため前面に（重なり見え対策のみ） */
@@ -200,8 +200,8 @@
   const inpEl    = shadow.querySelector('.inp'); // ← 追加
 
   function syncUIHeights(){
-  const uiH = (quickEl?.offsetHeight || 0) + (inpEl?.offsetHeight || 0);
-  dialog.style.setProperty('--uiH', uiH + 'px');
+  const inpH = inpEl?.offsetHeight || 0;
+  dialog.style.setProperty('--inpH', inpH + 'px');
 }
 
   // プリセット
