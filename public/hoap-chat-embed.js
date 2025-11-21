@@ -377,7 +377,7 @@ async function splitAndShow(text) {
     } else if (k === 'price') {
       botSay('どちらの料金について知りたい？<br>' +
         '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
-        '<button class="choice-btn" data-next="price_insta">採用広報支援（Instagram）</button>', true);
+        '<button class="choice-btn" data-next="price_insta">採用広報支援</button>', true);
     } else if (k === 'about') {
       botSay('どちらのサービスについて知りたい？<br>' +
         '<button class="choice-btn" data-ask="採用支援について詳しく教えて">採用支援</button>' +
