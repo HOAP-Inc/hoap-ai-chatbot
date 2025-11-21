@@ -257,7 +257,7 @@
       if (btn) userSay(btn.textContent);
       
       if (intent === 'cases') {
-        botSay('こちらから確認してね！<br><a href="https://hoap-inc.jp/case" target="_blank" rel="noopener noreferrer">導入事例紹介</a>', true);
+        botSay('こちらから確認してね！<br><button class="choice-btn" data-link="https://hoap-inc.jp/case">導入事例紹介</button>', true);
       } else if (intent === 'price') {
         botSay('どちらの料金について知りたい？<br>' +
           '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
@@ -277,6 +277,12 @@
       if (!btn) return;
       const next = btn.dataset.next;
       const askText = btn.dataset.ask;
+      const link = btn.dataset.link; // 追加
+
+      if (link) {
+        window.open(link, '_blank');
+        return;
+      }
       
       if (next === 'contact_direct') {
         window.location.href = 'https://hoap-inc.jp/contact';
@@ -285,19 +291,17 @@
 
       if (askText) {
         userSay(btn.textContent);
-        // Loading表示的なものがないので、Botの返答を待つ
-        // 簡易的なTyping表示関数がない場合、ここに追加するか、あるいは既存の仕組みがあれば使う
-        // index.htmlには showTyping がないので追加するか、あるいは即座に ask を呼ぶ
-        // ここでは ask 関数が非同期なので await する
         try {
-           // 簡易ローディング表示
            const tempId = 'temp-' + Date.now();
            botSay('<span id="' + tempId + '">…</span>', true);
            const reply = await ask(askText);
            const tempEl = shadow.getElementById(tempId);
-           if (tempEl) tempEl.closest('.msg').remove(); // ローディング消す
+           if (tempEl) tempEl.closest('.msg').remove(); 
            
            await splitAndShow(reply);
+           // 回答後に問い合わせボタンを表示（サービス紹介用）
+           botSay('<button class="choice-btn" data-next="contact_direct">問い合わせ</button>', true);
+           
            afterBotReply(btn.textContent);
         } catch(err) {
            botSay('ごめんね、エラーが出ちゃった。');

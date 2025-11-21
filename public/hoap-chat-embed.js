@@ -373,7 +373,7 @@ async function splitAndShow(text) {
     if (k === 'contact'){ window.location.href = 'https://hoap-inc.jp/contact'; return; }
     userSay(b.textContent);
     if (k === 'cases') {
-      botSay('こちらから確認してね！<br><a href="https://hoap-inc.jp/case" target="_blank" rel="noopener noreferrer">導入事例紹介</a>', true);
+      botSay('こちらから確認してね！<br><button class="choice-btn" data-link="https://hoap-inc.jp/case">導入事例紹介</button>', true);
     } else if (k === 'price') {
       botSay('どちらの料金について知りたい？<br>' +
         '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
@@ -394,6 +394,12 @@ async function splitAndShow(text) {
     if (!btn) return;
     const next = btn.dataset.next;
     const askText = btn.dataset.ask;
+    const link = btn.dataset.link;
+
+    if (link) {
+      window.open(link, '_blank');
+      return;
+    }
     
     if (next === 'contact_direct') {
       window.location.href = 'https://hoap-inc.jp/contact';
@@ -407,6 +413,8 @@ async function splitAndShow(text) {
         const reply = await ask(askText);
         hide();
         await splitAndShow(reply);
+        // 回答後に問い合わせボタンを追加
+        botSay('<button class="choice-btn" data-next="contact_direct">問い合わせ</button>', true);
         afterBotReply(btn.textContent);
       } catch(err) {
         hide();
