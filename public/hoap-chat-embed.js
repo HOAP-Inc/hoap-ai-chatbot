@@ -361,7 +361,8 @@ async function splitAndShow(text, appendHtml = '') {
   ta.addEventListener('compositionend',   () => { composing = false; });
   ta.addEventListener('keydown', e => {
     if (composing) return;
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); handle(); }
+    // ShiftなしEnterで送信
+    if (!e.shiftKey && e.key === 'Enter') { e.preventDefault(); handle(); }
   });
 
   // 開閉

@@ -422,7 +422,8 @@
     inputEl.addEventListener('compositionend',   () => { composing = false; });
     inputEl.addEventListener('keydown', e => {
       if (composing) return;
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      // ShiftなしEnterで送信
+      if (!e.shiftKey && e.key === 'Enter') {
         e.preventDefault();
         handleInput();
       }
