@@ -51,9 +51,9 @@
 
 /* チャット全体：ちょい小さく＆高さは常に80vhで安定 */
 .hoap-chat {
-  position: fixed; right: 20px; bottom: 20px; z-index: var(--z); /* ← 20px固定 */
-  width: 320px;                                   /* ← 360px → 320px */
-  max-width: calc(100vw - 40px);
+  position: fixed; right: 15px; bottom: 20px; z-index: var(--z); /* 20px -> 15px */
+  width: 360px;                                   /* 320px -> 360px */
+  max-width: calc(100vw - 30px);
   background: var(--bg); border-radius: var(--radius); box-shadow: var(--shadow);
   border: 1px solid #e5e7eb; isolation: isolate;
   display: none;                                   /* .openでdisplay:flexになる */
@@ -113,8 +113,8 @@
 
 /* ほーぷちゃん：PCは控えめ／右下固定 */
 .mascot{
-  position: absolute; right: -16px;
-  bottom: calc(12px + var(--uiH, 130px)); /* ボタン類の上へ */
+  position: absolute; right: -30px;
+  bottom: calc(0px + var(--uiH, 130px)); /* 12px -> 0px, right -16 -> -30 */
   width: min(41%, 147px);
   pointer-events: none; z-index: 1;
   filter: drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity: .98;
@@ -131,8 +131,8 @@
       height: 100vh; max-height: 100vh; border-radius: 0;
     }
     .mascot{
-      right: -8px;
-      bottom: calc(12px + var(--uiH, 130px)); /* スマホも同様 */
+      right: -20px;
+      bottom: calc(0px + var(--uiH, 130px)); /* スマホも同様 */
       width: min(45%, 140px);
     }
   }

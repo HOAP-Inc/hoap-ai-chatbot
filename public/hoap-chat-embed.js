@@ -58,8 +58,8 @@
 }
 
 
-      .chat{ position:fixed; right:20px; bottom:20px; z-index:var(--z);
-        width:320px; max-width:calc(100vw - 40px); background:var(--bg);
+      .chat{ position:fixed; right:15px; bottom:20px; z-index:var(--z);
+        width:360px; max-width:calc(100vw - 30px); background:var(--bg);
         border-radius:var(--r); box-shadow:var(--sh); border:1px solid #e5e7eb;
         display:none; flex-direction:column; overflow:hidden; height:72vh; max-height:80vh; isolation:isolate; }
       .open{ display:flex; }
@@ -111,8 +111,8 @@
       .mascot{
   position:absolute;
   inset:auto;
-  right:-16px;                           /* もっと右へ */
-  bottom:calc(12px + var(--uiH, 110px)); /* ボタン類の上まで持ち上げる */
+  right:-30px;                           /* もっと右へ */
+  bottom:calc(0px + var(--uiH, 110px));  /* 余白なし */
   width:200px;
   pointer-events:none;
   z-index:1;
@@ -140,8 +140,8 @@
 
   /* ほーぷちゃん：少し大きく、クイック＋入力の“上”に配置 */
   .mascot{
-    right:-8px;
-    bottom:calc(12px + var(--uiH, 110px)); /* スマホも同様に持ち上げ */
+    right:-20px;
+    bottom:calc(0px + var(--uiH, 110px)); /* スマホも同様 */
     width:min(66%, 220px);
   }
 
