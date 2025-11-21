@@ -329,7 +329,10 @@
     function afterBotReply(userText){
       const k = topicKey(userText);
       if (k === lastTopic) sameCount += 1; else { lastTopic = k; sameCount = 1; }
-      if (sameCount >= 2) { botSay('よかったらHOAPに相談してみない？「問い合わせ」ボタンを押してみてね！'); sameCount = 0; }
+      if (sameCount >= 2) { 
+        botSay('よかったらHOAPに相談してみない？「問い合わせ」ボタンを押してみてね！<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>', true); 
+        sameCount = 0; 
+      }
     }
 
     const API_ORIGIN = 'https://hoap-ai-chatbot.vercel.app';
