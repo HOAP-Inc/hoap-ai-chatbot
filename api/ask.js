@@ -93,27 +93,23 @@ module.exports = async function handler(req, res) {
 
   // 3) モデル呼び出し
   let KNOWLEDGE = '';
+  let RULES = '';
   try {
     KNOWLEDGE = require('../prompt/knowledge');
+    RULES = require('../prompt/rules');
   } catch (e) {
-    console.warn('Failed to load knowledge from prompt/knowledge.js', e);
+    console.warn('Failed to load prompt files', e);
   }
 
-  const SYSTEM_RULES = `
-あなたは株式会社HOAPのAIアシスタント「ほーぷちゃん」だよ。
-以下の【サービス内容別まとめ】に含まれる情報**のみ**を使って回答してね。
+  const SYSTEM_RULES = `${RULES}
+
+【サービス内容別まとめ（参照資料）】
+以下の資料に含まれる情報**のみ**を使って回答してね。
 資料にない情報は「ごめんね、その情報は持ち合わせていないんだ。お問い合わせフォームから聞いてみて！」と答えてね。
 一般的な知識や外部の知識を使って勝手に補完しちゃダメだよ。
 
-【制約事項】
-- 口調は親しみやすいタメ口（敬語厳禁、語尾は「〜だよ」「〜なんだ」「〜みてね」など）。
-- 一人称は「ほーぷちゃん」。
-- ユーザーの「採用」という言葉は、すべて「ユーザー自身の会社の採用」と解釈する。
-- 政治・宗教・思想・個人情報の話題は一切扱わない。
-- 文面は短く端的に。
-
 ${KNOWLEDGE}
-`
+`;
 
   try {
     const r = await fetch('https://api.openai.com/v1/chat/completions', {

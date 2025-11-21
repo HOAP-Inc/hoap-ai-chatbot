@@ -262,25 +262,52 @@
         botSay('どちらの料金について知りたい？<br>' +
           '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
           '<button class="choice-btn" data-next="price_insta">採用広報支援（Instagram）</button>', true);
+      } else if (intent === 'about') {
+        botSay('どちらのサービスについて知りたい？<br>' +
+          '<button class="choice-btn" data-ask="採用支援について詳しく教えて">採用支援</button>' +
+          '<button class="choice-btn" data-ask="採用広報支援について詳しく教えて">採用広報支援</button>', true);
       } else {
         botSay(KB[intent] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
       }
     }
     
     // メッセージ内の選択ボタンクリック処理
-    bodyEl.addEventListener('click', e => {
+    bodyEl.addEventListener('click', async e => {
       const btn = e.target.closest('.choice-btn');
       if (!btn) return;
       const next = btn.dataset.next;
+      const askText = btn.dataset.ask;
       
       if (next === 'contact_direct') {
         window.location.href = 'https://hoap-inc.jp/contact';
         return;
       }
 
+      if (askText) {
+        userSay(btn.textContent);
+        // Loading表示的なものがないので、Botの返答を待つ
+        // 簡易的なTyping表示関数がない場合、ここに追加するか、あるいは既存の仕組みがあれば使う
+        // index.htmlには showTyping がないので追加するか、あるいは即座に ask を呼ぶ
+        // ここでは ask 関数が非同期なので await する
+        try {
+           // 簡易ローディング表示
+           const tempId = 'temp-' + Date.now();
+           botSay('<span id="' + tempId + '">…</span>', true);
+           const reply = await ask(askText);
+           const tempEl = shadow.getElementById(tempId);
+           if (tempEl) tempEl.closest('.msg').remove(); // ローディング消す
+           
+           botSay(reply);
+           afterBotReply(btn.textContent);
+        } catch(err) {
+           botSay('ごめんね、エラーが出ちゃった。');
+        }
+        return;
+      }
+
       if (next && KB[next]) {
         userSay(btn.textContent);
-        botSay(KB[next], true); // HTML許可をデフォルトtrueにしてもいいが、念のため明示
+        botSay(KB[next], true); 
         afterBotReply(btn.textContent);
       }
     });

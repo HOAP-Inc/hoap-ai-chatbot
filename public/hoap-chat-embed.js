@@ -351,6 +351,10 @@ function showTyping(){
       botSay('どちらの料金について知りたい？<br>' +
         '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
         '<button class="choice-btn" data-next="price_insta">採用広報支援（Instagram）</button>', true);
+    } else if (k === 'about') {
+      botSay('どちらのサービスについて知りたい？<br>' +
+        '<button class="choice-btn" data-ask="採用支援について詳しく教えて">採用支援</button>' +
+        '<button class="choice-btn" data-ask="採用広報支援について詳しく教えて">採用広報支援</button>', true);
     } else {
       botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
     }
@@ -358,13 +362,29 @@ function showTyping(){
   });
 
   // メッセージ内ボタン
-  bodyEl.addEventListener('click', e => {
+  bodyEl.addEventListener('click', async e => {
     const btn = e.target.closest('.choice-btn');
     if (!btn) return;
     const next = btn.dataset.next;
+    const askText = btn.dataset.ask;
     
     if (next === 'contact_direct') {
       window.location.href = 'https://hoap-inc.jp/contact';
+      return;
+    }
+
+    if (askText) {
+      userSay(btn.textContent);
+      const hide = showTyping();
+      try {
+        const reply = await ask(askText);
+        hide();
+        botSay(reply);
+        afterBotReply(btn.textContent);
+      } catch(err) {
+        hide();
+        botSay('エラー: ' + (err.message || err));
+      }
       return;
     }
 
