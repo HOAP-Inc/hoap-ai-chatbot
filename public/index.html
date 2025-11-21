@@ -221,9 +221,13 @@
     
     // マスコット画像切り替え
     const MASCOTS = ['/hoap-basic.png', '/10.png', '/11.png', '/14.png'];
+    let mascotTimer = null;
     function updateMascot() {
       const mascotImg = shadow.querySelector('.mascot-sprite');
       if (!mascotImg) return;
+      
+      if (mascotTimer) { clearTimeout(mascotTimer); mascotTimer = null; }
+
       // 70%の確率で基本、30%でその他
       if (Math.random() < 0.7) {
         mascotImg.src = MASCOTS[0];
@@ -231,6 +235,11 @@
         const other = MASCOTS.slice(1);
         const pick = other[Math.floor(Math.random() * other.length)];
         mascotImg.src = pick;
+        // 5秒後に戻す
+        mascotTimer = setTimeout(() => {
+          mascotImg.src = MASCOTS[0];
+          mascotTimer = null;
+        }, 5000);
       }
     }
 

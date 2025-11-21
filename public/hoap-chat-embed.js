@@ -242,14 +242,22 @@
   };
 
   // マスコット表情切り替え
+  let mascotTimer = null;
   function updateMascot(){
     const img = $('.mascot img');
     if(!img) return;
+    if(mascotTimer) { clearTimeout(mascotTimer); mascotTimer = null; }
+
     if(Math.random() < 0.7){
       img.src = MASCOTS[0];
     } else {
       const other = MASCOTS.slice(1);
       img.src = other[Math.floor(Math.random() * other.length)];
+      // 5秒後に戻す
+      mascotTimer = setTimeout(() => {
+        img.src = MASCOTS[0];
+        mascotTimer = null;
+      }, 5000);
     }
   }
 
