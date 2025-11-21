@@ -85,7 +85,12 @@ async function appendRow(sheetId, values, accessToken) {
 // メイン：会話ログを記録
 async function logConversation(logData) {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL
-  const privateKey = (process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n')
+  // 改行の処理を強化（\n も \\n も両方対応）
+  let privateKey = process.env.GOOGLE_PRIVATE_KEY || ''
+  privateKey = privateKey.replace(/\\n/g, '\n')  // 文字列としての \n を改行に
+  if (!privateKey.includes('\n')) {
+    // それでも改行がない場合、base64デコードを試みない（そのまま使う）
+  }
   const sheetId = process.env.GOOGLE_SHEET_ID
 
   // 環境変数が未設定の場合はスキップ（エラーにしない）
@@ -94,8 +99,13 @@ async function logConversation(logData) {
     return null
   }
 
+  // デバッグ用：秘密鍵の先頭を確認
+  console.log('[sheets] privateKey starts with:', privateKey.substring(0, 30))
+
   try {
+    console.log('[sheets] Getting access token...')
     const accessToken = await getAccessToken(email, privateKey)
+    console.log('[sheets] Got access token:', accessToken ? 'OK' : 'EMPTY')
 
     // カラム順: timestamp, session_id, turn, user_message, bot_reply, referrer, landing_page, origin, device
     const row = [
