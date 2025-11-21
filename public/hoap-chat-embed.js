@@ -86,7 +86,7 @@
   }
       /* メッセージは z=2（＝マスコットの前） */
       .msg{ display:flex; gap:8px; margin-bottom:10px; position:relative; z-index:2; }
-      .bubble{ padding:10px 12px; border-radius:14px; max-width:80%; line-height:1.4; font-size:14px; }
+      .bubble{ padding:10px 12px; border-radius:14px; max-width:80%; line-height:1.4; font-size:14px; white-space:pre-wrap; }
       .bot .bubble{ background:#fff; border:1px solid #e5e7eb; max-width:65%; } /* ほーぷちゃんが見えるよう幅を狭める */
       .user{ justify-content:flex-end; } .user .bubble{ background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3)); color:#fff; }
       .bubble a{ color:#6366f1; text-decoration:underline; }
