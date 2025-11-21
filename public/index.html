@@ -218,6 +218,22 @@
     dialog.style.display = 'none';
 
     const closeBtn = shadow.querySelector('.hoap-chat-close');
+    
+    // マスコット画像切り替え
+    const MASCOTS = ['/hoap-basic.png', '/10.png', '/11.png', '/14.png'];
+    function updateMascot() {
+      const mascotImg = shadow.querySelector('.mascot-sprite');
+      if (!mascotImg) return;
+      // 70%の確率で基本、30%でその他
+      if (Math.random() < 0.7) {
+        mascotImg.src = MASCOTS[0];
+      } else {
+        const other = MASCOTS.slice(1);
+        const pick = other[Math.floor(Math.random() * other.length)];
+        mascotImg.src = pick;
+      }
+    }
+
     function placeMascot() {
       const mascot = shadow.querySelector('.mascot');
       if (!mascot) return;
@@ -256,7 +272,10 @@
       placeMascot();
       syncMascotWithScroll();
     }
-    const botSay  = (t, isHtml = false) => addMsg('bot', t, isHtml);
+    const botSay  = (t, isHtml = false) => {
+      addMsg('bot', t, isHtml);
+      updateMascot(); // 発言時に表情を変える
+    };
     const userSay = t => addMsg('user', t);
 
     function answer(intent) {
@@ -335,12 +354,7 @@
     }
     let lastTopic = ''; let sameCount = 0;
     function afterBotReply(userText){
-      const k = topicKey(userText);
-      if (k === lastTopic) sameCount += 1; else { lastTopic = k; sameCount = 1; }
-      if (sameCount >= 2) { 
-        botSay('よかったらHOAPに相談してみない？「問い合わせ」ボタンを押してみてね！<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>', true); 
-        sameCount = 0; 
-      }
+      // 強制誘導は削除（LLMが文末で誘導するため）
     }
 
     const API_ORIGIN = 'https://hoap-ai-chatbot.vercel.app';
@@ -446,6 +460,8 @@
       if (!bodyEl.dataset.welcomed) {
         botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
         bodyEl.dataset.welcomed = '1';
+      } else {
+        updateMascot(); // 開いた時にも変える
       }
       placeMascot();
       syncMascotWithScroll();

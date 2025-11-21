@@ -3,7 +3,8 @@
   const ORIGIN = 'https://hoap-ai-chatbot.vercel.app';
   const API    = ORIGIN + '/api/ask';
   const IMG    = ORIGIN + '/hoap-basic.png';
-  const QIMG   = ORIGIN + '/question.png'; // 追加
+  const MASCOTS = [IMG, ORIGIN + '/10.png', ORIGIN + '/11.png', ORIGIN + '/14.png'];
+  const QIMG   = ORIGIN + '/question.png';
 
   // Shadow DOM
   const mount  = document.createElement('div');
@@ -240,6 +241,18 @@
     flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！'
   };
 
+  // マスコット表情切り替え
+  function updateMascot(){
+    const img = $('.mascot img');
+    if(!img) return;
+    if(Math.random() < 0.7){
+      img.src = MASCOTS[0];
+    } else {
+      const other = MASCOTS.slice(1);
+      img.src = other[Math.floor(Math.random() * other.length)];
+    }
+  }
+
   // 吹き出し
   function addMsg(side, text, isHtml = false){
     const row = document.createElement('div');
@@ -256,7 +269,10 @@
     bodyEl.scrollTop = bodyEl.scrollHeight;
   }
   const userSay = t => addMsg('user', t);
-  const botSay  = (t, isHtml = false) => addMsg('bot', t, isHtml);
+  const botSay  = (t, isHtml = false) => {
+    addMsg('bot', t, isHtml);
+    updateMascot();
+  };
 
   // 「…」のタイピング表示を出し、あとで消す関数を返す
 function showTyping(){
@@ -343,22 +359,9 @@ async function splitAndShow(text, appendHtml = '') {
   }
 }
 
-  // CTA
+  // CTA（無効化）
   function afterBotReply(userText){
-    const k = userText.toLowerCase();
-    const key = k.includes('料金')||k.includes('price') ? 'price'
-             : k.includes('導入')||k.includes('flow')||k.includes('始め') ? 'flow'
-             : k.includes('事例')||k.includes('case') ? 'cases'
-             : k.includes('インスタ')||k.includes('instagram') ? 'insta'
-             : k.includes('求人')||k.includes('採用')||k.includes('広報') ? 'feature'
-             : 'about';
-    dialog.__last = dialog.__last || '';
-    dialog.__cnt  = dialog.__cnt  || 0;
-    if (dialog.__last === key) dialog.__cnt++; else { dialog.__last = key; dialog.__cnt = 1; }
-    if (dialog.__cnt >= 2){ 
-      botSay('よかったらHOAPに相談してみない？「問い合わせ」ボタンを押してみてね！<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>', true);
-      dialog.__cnt = 0; 
-    }
+    // 強制誘導は削除
   }
 
   // 入力系
@@ -378,6 +381,8 @@ async function splitAndShow(text, appendHtml = '') {
   if (!bodyEl.dataset.welcomed){
     botSay('こんにちは！ほーぷちゃんだよ。気になるところをタップしてね！');
     bodyEl.dataset.welcomed = '1';
+  } else {
+    updateMascot();
   }
   syncUIHeights();   // ★ 追加
   ta.focus();
