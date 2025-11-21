@@ -370,10 +370,13 @@
       setTimeout(() => { inputEl.value = ''; inputEl.focus(); }, 0);
       try {
         const a = await ask(text);
+        // 問い合わせボタンを常に表示
+        const contactBtn = '<br><div style="margin-top:10px; text-align:center;"><button class="choice-btn" data-next="contact_direct">問い合わせ</button></div>';
+        
         if (a) {
-          await splitAndShow(a);
+          await splitAndShow(a, contactBtn);
         } else {
-          botSay('（空の返答）');
+          botSay('（空の返答）' + contactBtn, true);
         }
         afterBotReply(text);
       } catch (e) {

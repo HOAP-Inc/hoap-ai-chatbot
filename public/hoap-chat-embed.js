@@ -294,9 +294,16 @@ function showTyping(){
   const hideTyping = showTyping();
 
   try{
-    const reply = await ask(t) || '（空の返答）';
+    const reply = await ask(t);
     hideTyping();         // 「…」を消す
-    await splitAndShow(reply);
+    
+    const contactBtn = '<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>';
+    if (reply) {
+      await splitAndShow(reply, contactBtn);
+    } else {
+      botSay('（空の返答）' + contactBtn, true);
+    }
+    
     afterBotReply(t);
   }catch(e){
     hideTyping();         // エラー時も必ず消す
