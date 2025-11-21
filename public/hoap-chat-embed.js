@@ -466,7 +466,7 @@ async function splitAndShow(text, appendHtml = '') {
       botSay(botReply);
     } else {
       botReply = KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。';
-      botSay(botReply);
+      botSay(botReply, true);
     }
     // 定型回答をログに記録
     logOnly(userText, botReply);
