@@ -140,18 +140,22 @@ ${KNOWLEDGE}
     const data = await r.json()
     const reply = data.choices?.[0]?.message?.content ?? ''
 
-    // スプレッドシートにログ記録（非同期、エラーでも応答は返す）
-    logConversation({
-      timestamp: new Date().toISOString(),
-      session_id: logMeta.session_id,
-      turn: logMeta.turn,
-      user_message: message,
-      bot_reply: reply,
-      referrer: logMeta.referrer,
-      landing_page: logMeta.landing_page,
-      origin: logMeta.origin,
-      device: logMeta.device,
-    }).catch(e => console.warn('[log] failed:', e.message))
+    // スプレッドシートにログ記録（awaitして完了を待つ）
+    try {
+      await logConversation({
+        timestamp: new Date().toISOString(),
+        session_id: logMeta.session_id,
+        turn: logMeta.turn,
+        user_message: message,
+        bot_reply: reply,
+        referrer: logMeta.referrer,
+        landing_page: logMeta.landing_page,
+        origin: logMeta.origin,
+        device: logMeta.device,
+      })
+    } catch (logErr) {
+      console.warn('[log] failed:', logErr.message)
+    }
 
     return res.status(200).json({ reply })
   } catch (e) {
