@@ -298,9 +298,8 @@
            const tempEl = shadow.getElementById(tempId);
            if (tempEl) tempEl.closest('.msg').remove(); 
            
-           await splitAndShow(reply);
-           // 回答後に問い合わせボタンを表示（サービス紹介用）
-           botSay('<button class="choice-btn" data-next="contact_direct">問い合わせ</button>', true);
+           const contactBtn = '<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>';
+           await splitAndShow(reply, contactBtn);
            
            afterBotReply(btn.textContent);
         } catch(err) {
@@ -370,15 +369,13 @@
       }
     }
 
-    async function splitAndShow(text) {
+    async function splitAndShow(text, appendHtml = '') {
       const MAX_LEN = 225;
       const lines = text.split('\n');
       const chunks = [];
       let current = '';
 
       for (const line of lines) {
-        // 非常に長い1行が225文字を超える場合も考慮すべきだが、今回は改行区切り前提
-        // もしcurrent単体ですでにMAXを超えている場合などは強制分割が必要だが簡易実装とする
         if ((current + line).length > MAX_LEN) {
           if (current) chunks.push(current);
           current = line + '\n';
@@ -387,6 +384,12 @@
         }
       }
       if (current) chunks.push(current);
+      
+      // 最後のチャンクに追加HTMLを結合
+      if (appendHtml) {
+        if (chunks.length === 0) chunks.push(appendHtml);
+        else chunks[chunks.length - 1] += appendHtml;
+      }
 
       let lastMsg = null;
       for (let i = 0; i < chunks.length; i++) {
@@ -394,7 +397,8 @@
           await new Promise(r => setTimeout(r, 3000));
           if (lastMsg) lastMsg.remove();
         }
-        botSay(chunks[i].trim());
+        // ボタンが含まれる可能性があるため HTMLモード(true) で表示
+        botSay(chunks[i].trim(), true);
         lastMsg = bodyEl.lastElementChild; 
       }
     }

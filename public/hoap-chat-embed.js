@@ -296,7 +296,7 @@ function showTyping(){
   }
 }
 
-async function splitAndShow(text) {
+async function splitAndShow(text, appendHtml = '') {
   const MAX_LEN = 225;
   const lines = text.split('\n');
   const chunks = [];
@@ -311,6 +311,11 @@ async function splitAndShow(text) {
     }
   }
   if (current) chunks.push(current);
+  
+  if (appendHtml) {
+    if (chunks.length === 0) chunks.push(appendHtml);
+    else chunks[chunks.length - 1] += appendHtml;
+  }
 
   let lastMsg = null;
   for (let i = 0; i < chunks.length; i++) {
@@ -318,7 +323,7 @@ async function splitAndShow(text) {
       await new Promise(r => setTimeout(r, 3000));
       if (lastMsg) lastMsg.remove();
     }
-    botSay(chunks[i].trim());
+    botSay(chunks[i].trim(), true);
     lastMsg = bodyEl.lastElementChild; 
   }
 }
@@ -412,9 +417,8 @@ async function splitAndShow(text) {
       try {
         const reply = await ask(askText);
         hide();
-        await splitAndShow(reply);
-        // 回答後に問い合わせボタンを追加
-        botSay('<button class="choice-btn" data-next="contact_direct">問い合わせ</button>', true);
+        const contactBtn = '<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>';
+        await splitAndShow(reply, contactBtn);
         afterBotReply(btn.textContent);
       } catch(err) {
         hide();
