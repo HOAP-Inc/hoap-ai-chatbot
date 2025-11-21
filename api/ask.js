@@ -70,7 +70,25 @@ module.exports = async function handler(req, res) {
 
   // 1) ローカル判定
   const verdict = localGuard(message)
-  if (!verdict.ok) return res.status(200).json({ reply: verdict.reply })
+  if (!verdict.ok) {
+    // ガードで弾かれた発話もログに記録
+    try {
+      await logConversation({
+        timestamp: new Date().toISOString(),
+        session_id: logMeta.session_id,
+        turn: logMeta.turn,
+        user_message: message,
+        bot_reply: verdict.reply,
+        referrer: logMeta.referrer,
+        landing_page: logMeta.landing_page,
+        origin: logMeta.origin,
+        device: logMeta.device,
+      })
+    } catch (logErr) {
+      console.warn('[log] failed:', logErr.message)
+    }
+    return res.status(200).json({ reply: verdict.reply })
+  }
 
   // 2) OpenAI モデレーション
   try {
@@ -88,9 +106,24 @@ module.exports = async function handler(req, res) {
     }
     const modJson = await mod.json()
     if (Array.isArray(modJson.results) && modJson.results[0]?.flagged) {
-      return res.status(200).json({
-        reply: 'その内容は扱えない設定にしてる。サービスに関する質問なら答えられるよ',
-      })
+      const moderationReply = 'その内容は扱えない設定にしてる。サービスに関する質問なら答えられるよ'
+      // モデレーションで弾かれた発話もログに記録
+      try {
+        await logConversation({
+          timestamp: new Date().toISOString(),
+          session_id: logMeta.session_id,
+          turn: logMeta.turn,
+          user_message: message,
+          bot_reply: moderationReply,
+          referrer: logMeta.referrer,
+          landing_page: logMeta.landing_page,
+          origin: logMeta.origin,
+          device: logMeta.device,
+        })
+      } catch (logErr) {
+        console.warn('[log] failed:', logErr.message)
+      }
+      return res.status(200).json({ reply: moderationReply })
     }
   } catch (e) {
     return res.status(502).json({ error: 'moderation_fetch_failed', detail: String(e).slice(0, 800) })
