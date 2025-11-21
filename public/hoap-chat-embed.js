@@ -42,8 +42,8 @@
 }
 .launcher img.over{
   position: absolute;
-  top: -40px; right: 0;
-  width: 60px; height: auto;
+  top: -100px; right: -20px;
+  width: 180px; height: auto;
   pointer-events: none;
   animation: floaty 4.8s ease-in-out infinite;
 }
