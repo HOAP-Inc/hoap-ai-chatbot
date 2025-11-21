@@ -149,11 +149,12 @@
     right:8px;
     bottom:8px;
     width:85vw;          /* 幅を85%に広げる（ボタン3列確保のため） */
-    height:70vh;
+    height:70dvh;        /* 70vh -> 70dvh */
     max-width:none;
     max-height:none;
     border-radius:24px;
   }
+  .inp textarea{ font-size:16px; } /* ズーム防止 */
 
   /* ほーぷちゃん：少し大きく、クイック＋入力の“上”に配置 */
   .mascot{
