@@ -92,6 +92,15 @@
       .bubble a{ color:#6366f1; text-decoration:underline; }
       .bubble a:hover{ color:#4f46e5; }
 
+      /* 選択肢ボタン */
+      .choice-btn{
+        display:inline-block; margin:4px 2px; padding:6px 12px;
+        background:#fff; color:#333;
+        border:2px solid #8b5cf6; border-radius:999px;
+        font-size:13px; cursor:pointer; transition:background .2s;
+      }
+      .choice-btn:hover{ background:#f5f3ff; }
+
       .quick{ display:flex; flex-wrap:wrap; gap:8px; padding:10px 12px; border-top:1px solid #e5e7eb; background:#fff; }
       .quick button{ border:1px solid #e5e7eb; background:#fff; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }
       .inp{ display:flex; gap:8px; padding:10px; border-top:1px solid #e5e7eb; background:#fff; }
@@ -207,6 +216,8 @@
     about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
     cases: '事例1 兵庫の訪問看護で応募増。事例2 千葉の介護で応募2.5倍。事例3 東京の訪問看護で インスタ見て応募 の声。',
     price: '採用支援は月額10万円〜。Instagram運用は月額15万円。初期費用は各10万円。',
+    price_recruit: '採用支援は月額10万円〜（求人数・期間により変動）。初期費用は10万円だよ！',
+    price_insta: 'Instagram運用支援は月額15万円。初期費用は10万円だよ！',
     flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！',
     other: 'その他のご質問については、お気軽に問い合わせフォームからご連絡ください。詳しくお答えしますね！'
   };
@@ -326,10 +337,26 @@ function showTyping(){
     userSay(b.textContent);
     if (k === 'cases') {
       botSay('こちらから確認してね！<br><a href="https://hoap-inc.jp/case" target="_blank" rel="noopener noreferrer">導入事例紹介</a>', true);
+    } else if (k === 'price') {
+      botSay('どちらの料金について知りたい？<br>' +
+        '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
+        '<button class="choice-btn" data-next="price_insta">採用広報支援（Instagram）</button>', true);
     } else {
       botSay(KB[k] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
     }
     afterBotReply(b.textContent);
+  });
+
+  // メッセージ内ボタン
+  bodyEl.addEventListener('click', e => {
+    const btn = e.target.closest('.choice-btn');
+    if (!btn) return;
+    const next = btn.dataset.next;
+    if (next && KB[next]) {
+      userSay(btn.textContent);
+      botSay(KB[next]);
+      afterBotReply(btn.textContent);
+    }
   });
   // 下部UIの高さを監視して反映
 const ro = new ResizeObserver(syncUIHeights);

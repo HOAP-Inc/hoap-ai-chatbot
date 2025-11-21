@@ -88,6 +88,23 @@
 .bubble a { color: #6366f1; text-decoration: underline; }
 .bubble a:hover { color: #4f46e5; }
 
+/* 選択肢ボタン（料金など） */
+.choice-btn {
+  display: inline-block;
+  margin: 4px 2px;
+  padding: 6px 12px;
+  background: #fff;
+  color: #333;                  /* 通常テキスト色 */
+  border: 2px solid #8b5cf6;    /* 送信ボタン系を濃くした紫 */
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.choice-btn:hover {
+  background: #f5f3ff;
+}
+
 .hoap-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-top: 1px solid #e5e7eb; background: #fff; }
 .hoap-quick button { border: 1px solid #e5e7eb; background: #fff; border-radius: 999px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
 .hoap-chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e5e7eb; background: #fff; }
@@ -183,6 +200,8 @@
       about: 'HOAPは医療・歯科・介護業界に特化した採用支援サービスを提供しているよ。求人媒体＋SNS運用を代行し、手間なく欲しい人材から応募を集めるのが得意なんだ！',
       cases: '事例① 兵庫県の訪問看護ステーション様では人事部門をアウトソーシングして応募が増加。事例②千葉県の介護事業所様ではなんと応募数が2.5倍に。　事例③東京都の訪問看護ステーション様では求職者からDMで応募が来たり面接で「インスタを見て応募を決めました」という声もあるんだ。',
       price: '採用支援は月額10万円〜（求人数・期間により変動）。Instagram運用支援は月額15万円。初期費用は各10万円で提供しているよ！',
+      price_recruit: '採用支援は月額10万円〜（求人数・期間により変動）。初期費用は10万円だよ！',
+      price_insta: 'Instagram運用支援は月額15万円。初期費用は10万円だよ！',
       flow: '導入フローは ①無料相談 ②契約 ③キックオフMTG ④支援開始。最短3営業日で着手可能だよ！',
       other: 'その他のご質問については、お気軽に問い合わせフォームからご連絡ください。詳しくお答えしますね！',
     };
@@ -209,12 +228,29 @@
     function answer(intent) {
       const btn = quickEl.querySelector('[data-intent="' + intent + '"]');
       if (btn) userSay(btn.textContent);
+      
       if (intent === 'cases') {
         botSay('こちらから確認してね！<br><a href="https://hoap-inc.jp/case" target="_blank" rel="noopener noreferrer">導入事例紹介</a>', true);
+      } else if (intent === 'price') {
+        botSay('どちらの料金について知りたい？<br>' +
+          '<button class="choice-btn" data-next="price_recruit">採用支援</button>' +
+          '<button class="choice-btn" data-next="price_insta">採用広報支援（Instagram）</button>', true);
       } else {
         botSay(KB[intent] || 'その話題は用意してないやつ。サービスについてなら案内できるよ。');
       }
     }
+    
+    // メッセージ内の選択ボタンクリック処理
+    bodyEl.addEventListener('click', e => {
+      const btn = e.target.closest('.choice-btn');
+      if (!btn) return;
+      const next = btn.dataset.next;
+      if (next && KB[next]) {
+        userSay(btn.textContent);
+        botSay(KB[next]);
+        afterBotReply(btn.textContent);
+      }
+    });
 
     function topicKey(text){
       const t = text.replace(/\s+/g,'').toLowerCase();
