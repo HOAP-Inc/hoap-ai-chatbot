@@ -243,7 +243,7 @@
     price: '採用支援は月額10万円〜。Instagram運用は月額15万円。初期費用は各10万円。',
     price_recruit: '採用支援サービスは月額110,000円（税込）から導入可能だよ！<br>現在の課題感や採用計画に合わせて柔軟に対応できるから、よかったらまずは相談してみてね。<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>',
     price_insta: '採用支援サービスは月額165,000円（税込）で導入可能だよ！<br>現在の課題感や採用計画に合わせて柔軟に対応できるから、よかったらまずは相談してみてね。<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>',
-    flow: '導入フローは 1 無料相談 2 契約 3 キックオフMTG 4 支援開始。最短3営業日で着手可能！'
+    flow: '①無料相談<br>まずはあなたの課題を教えてね。<br>↓<br>②電子契約<br>↓<br>③キックオフ<br>ペルソナの確認や支援の方向性を決めていくよ！<br>↓<br>④支援開始！<br><button class="choice-btn" data-next="contact_direct">問い合わせ</button>'
   };
 
   // マスコット表情切り替え
