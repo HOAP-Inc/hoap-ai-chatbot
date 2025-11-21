@@ -113,7 +113,7 @@
 
 /* ほーぷちゃん：PCは控えめ／右下固定 */
 .mascot{
-  position: absolute; right: 0; bottom: 12px; /* 右端に寄せる */
+  position: absolute; right: -16px; bottom: 70px; /* 入力欄の上あたり */
   width: min(41%, 147px);
   pointer-events: none; z-index: 1;
   filter: drop-shadow(0 10px 24px rgba(0,0,0,.22)); opacity: .98;
@@ -123,17 +123,17 @@
 @keyframes floaty { 0% { transform: translateY(0) rotate(0.4deg);} 50% { transform: translateY(-8px) rotate(-0.4deg);} 100% { transform: translateY(0) rotate(0.4deg);} }
 @media (prefers-reduced-motion: reduce) { .mascot-sprite { animation: none; } }
 
-/* スマホ：全高・全幅、ほーぷちゃんさらに小さく右下 */
-@media (max-width: 480px){
-  .hoap-chat{
-    right: 0; bottom: 0; width: 100%;
-    height: 100vh; max-height: 100vh; border-radius: 0;
+  /* スマホ：全高・全幅、ほーぷちゃんさらに小さく右下 */
+  @media (max-width: 480px){
+    .hoap-chat{
+      right: 0; bottom: 0; width: 100%;
+      height: 100vh; max-height: 100vh; border-radius: 0;
+    }
+    .mascot{
+      right: -8px; bottom: 70px; /* スマホも位置調整 */
+      width: min(45%, 140px);
+    }
   }
-  .mascot{
-    right: 8px; bottom: 8px;
-    width: min(45%, 140px);   /* ← スマホはもっと小さく */
-  }
-}
       </style>
 
       <button class='hoap-chat-launcher' aria-label='チャットを開く'>
@@ -188,7 +188,8 @@
     function placeMascot() {
       const mascot = shadow.querySelector('.mascot');
       if (!mascot) return;
-      mascot.style.setProperty('bottom', '12px', 'important');
+      // JSでの強制位置指定を解除（CSSに任せる）
+      // mascot.style.setProperty('bottom', '12px', 'important');
     }
     function syncMascotWithScroll(){
       const mascot = shadow.querySelector('.mascot');
